@@ -1,5 +1,6 @@
 package fr.univ_amu;
 
+import fr.univ_amu.model.Direction;
 import fr.univ_amu.model.Movement;
 import fr.univ_amu.utils.Configuration;
 import fr.univ_amu.utils.TextTransformation;
@@ -13,8 +14,9 @@ public class Main {
 
         new Thread(() -> {
             while (!Thread.interrupted()) {
+
+                internalPanelView.setMovement(Movement.UP);
                 for (int i = 0; i <= Configuration.MAX_LEVEL; i++) {
-                    internalPanelView.setMovement(Movement.UP);
                     internalPanelView.setLevel(i);
                     internalPanelView.illuminateButton(i);
                     try {
@@ -24,8 +26,8 @@ public class Main {
                     }
                 }
 
+                internalPanelView.setMovement(Movement.DOWN);
                 for (int i = Configuration.MAX_LEVEL; i >= 0; i--) {
-                    internalPanelView.setMovement(Movement.DOWN);
                     internalPanelView.setLevel(i);
                     internalPanelView.switchOffButton(i);
                     try {
@@ -38,5 +40,29 @@ public class Main {
         }).start();
 
         ExternalPanelView externalPanelView = new ExternalPanelView();
+
+        new Thread(() -> {
+            while (!Thread.interrupted()) {
+                for (int i = 0; i <= Configuration.MAX_LEVEL; i++) {
+                    externalPanelView.setButtonLight(i, Direction.UP, true);
+                    externalPanelView.setButtonLight(i, Direction.DOWN, true);
+                    try {
+                        Thread.sleep(1000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                for (int i = Configuration.MAX_LEVEL; i >= 0; i--) {
+                    externalPanelView.setButtonLight(i, Direction.UP, false);
+                    externalPanelView.setButtonLight(i, Direction.DOWN, false);
+                    try {
+                        Thread.sleep(1000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }).start();
     }
 }

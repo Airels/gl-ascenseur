@@ -1,5 +1,6 @@
 package fr.univ_amu.view;
 
+import fr.univ_amu.model.Direction;
 import fr.univ_amu.utils.Configuration;
 
 import javax.swing.*;
@@ -13,12 +14,16 @@ import java.util.*;
 public class ExternalPanelView {
 
     private JFrame window;
-    private JPanel grid, buttonsGrid;
+    private JPanel grid;
+    private JButton[] buttonsUp, buttonsDown;
 
     /**
      * Default constructor
      */
     public ExternalPanelView() {
+        buttonsUp = new JButton[Configuration.MAX_LEVEL+1];
+        buttonsDown = new JButton[Configuration.MAX_LEVEL+1];
+
         window = new JFrame("External panels");
         window.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         window.setLayout(new BorderLayout());
@@ -42,6 +47,9 @@ public class ExternalPanelView {
             panel.add(bDown);
             panel.add(label);
             grid.add(panel);
+
+            buttonsUp[i] = bUp;
+            buttonsDown[i] = bDown;
         }
 
         window.add(grid);
@@ -51,29 +59,17 @@ public class ExternalPanelView {
     }
 
     /**
-     * 
+     * Turns on light on external specific panel for specific direction
+     * @param level external panel level
+     * @param direction direction to light up/down
+     * @param lightOn true to light it up, false to light it down
      */
-    private boolean illuminatedUpButton;
-
-    /**
-     * 
-     */
-    private boolean illuminatedDownButton;
-
-
-    /**
-     * Turn on specific light of panel
-     * @param direction
-     */
-    public void setLight(/* Direction direction */) {
-        // TODO implement here
-    }
-
-    /**
-     * Turn off both lights of the panel
-     */
-    public void resetLights() {
-        // TODO implement here
+    public void setButtonLight(int level, Direction direction, boolean lightOn) {
+        JButton[] buttons = (direction == Direction.UP) ? buttonsUp : buttonsDown;
+        if (lightOn)
+            buttons[level].setBackground(Color.CYAN);
+        else
+            buttons[level].setBackground(InternalPanelView.defaultButtonColor);
     }
 
 }
