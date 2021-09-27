@@ -1,5 +1,6 @@
 package fr.univ_amu.view;
 
+import fr.univ_amu.controller.ExternalPanelController;
 import fr.univ_amu.model.Direction;
 import fr.univ_amu.utils.Configuration;
 
@@ -36,10 +37,10 @@ public class ExternalPanelView {
 
             JButton bUp = new JButton("↑");
             int finalI = i;
-            bUp.addActionListener((e) -> System.out.println("Hello ↑ " + finalI));
+            bUp.addActionListener(new ExternalPanelController(i, Direction.UP));
 
             JButton bDown = new JButton("↓");
-            bDown.addActionListener((e) -> System.out.println("Hello ↓ " + finalI));
+            bDown.addActionListener(new ExternalPanelController(i, Direction.DOWN));
 
             JLabel label = new JLabel("Level: " + finalI);
 

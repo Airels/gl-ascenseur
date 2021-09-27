@@ -3,7 +3,6 @@ package fr.univ_amu;
 import fr.univ_amu.model.Direction;
 import fr.univ_amu.model.Movement;
 import fr.univ_amu.utils.Configuration;
-import fr.univ_amu.utils.TextTransformation;
 import fr.univ_amu.view.ExternalPanelView;
 import fr.univ_amu.view.InternalPanelView;
 

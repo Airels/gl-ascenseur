@@ -1,5 +1,7 @@
 package fr.univ_amu.view;
 
+import fr.univ_amu.controller.InternalPanelController;
+import fr.univ_amu.model.ButtonType;
 import fr.univ_amu.model.Movement;
 import fr.univ_amu.utils.TextTransformation;
 
@@ -50,20 +52,20 @@ public class InternalPanelView {
         for (int i = MAX_LEVEL; i >= 0; i--) {
             JButton b = new JButton(Integer.toString(i));
             b.setName(Integer.toString(i));
-            b.addActionListener((e) -> System.out.println("Hello " + b.getName()));
+            b.addActionListener(new InternalPanelController(i));
             buttonsGrid.add(b);
             buttons[i] = b;
         }
 
         JButton emergency = new JButton("BREAK");
         emergency.setName("BREAK");
-        emergency.addActionListener((e) -> System.out.println("Hello " + emergency.getName()));
+        emergency.addActionListener(new InternalPanelController(ButtonType.BREAK));
         buttonsGrid.add(emergency);
         buttons[MAX_LEVEL+1] = emergency;
 
         JButton reset = new JButton("RESET");
         reset.setName("RESET");
-        reset.addActionListener((e) -> System.out.println("Hello " + reset.getName()));
+        reset.addActionListener(new InternalPanelController(ButtonType.RESET));
         buttonsGrid.add(reset);
         buttons[MAX_LEVEL+2] = reset;
 
