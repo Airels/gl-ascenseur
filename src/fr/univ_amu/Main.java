@@ -9,6 +9,10 @@ import fr.univ_amu.view.InternalPanelView;
 public class Main {
 
     public static void main(String[] args) {
+
+
+        // ---
+
         InternalPanelView internalPanelView = new InternalPanelView();
 
         new Thread(() -> {

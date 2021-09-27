@@ -57,14 +57,12 @@ public class InternalPanelView {
             buttons[i] = b;
         }
 
-        JButton emergency = new JButton("BREAK");
-        emergency.setName("BREAK");
+        JButton emergency = new JButton(ButtonType.BREAK.toString());
         emergency.addActionListener(new InternalPanelController(ButtonType.BREAK));
         buttonsGrid.add(emergency);
         buttons[MAX_LEVEL+1] = emergency;
 
-        JButton reset = new JButton("RESET");
-        reset.setName("RESET");
+        JButton reset = new JButton(ButtonType.RESET.toString());
         reset.addActionListener(new InternalPanelController(ButtonType.RESET));
         buttonsGrid.add(reset);
         buttons[MAX_LEVEL+2] = reset;
