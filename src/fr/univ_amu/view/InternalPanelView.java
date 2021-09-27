@@ -1,5 +1,8 @@
 package fr.univ_amu.view;
 
+import fr.univ_amu.model.Movement;
+import fr.univ_amu.utils.TextTransformation;
+
 import javax.swing.*;
 
 import java.awt.*;
@@ -34,7 +37,7 @@ public class InternalPanelView {
         GridBagConstraints gridConstraints = new GridBagConstraints();
         grid.setLayout(new GridBagLayout());
 
-        visual = new JLabel("- 0 0");
+        visual = new JLabel("-00");
         visual.setHorizontalAlignment(SwingConstants.CENTER);
         visual.setFont(new Font("Consolas", Font.BOLD, 50));
         visual.setForeground(Color.RED);
@@ -73,12 +76,29 @@ public class InternalPanelView {
     }
 
     /**
-     * Update screen text
-     * @param message
+     * Update level shown by internal screen
+     * @param level level to show
      */
-    public void setScreenText(String message) {
-        if (message.length() > 3) throw new IllegalArgumentException("Message length can't exceed 3 characters");
-        visual.setText(message.replace("", " ").trim());
+    public void setLevel(int level) {
+        if (level > MAX_LEVEL) throw new IllegalArgumentException("Given level exceed maximum level");
+
+        String newScreenInfo = visual.getText().toCharArray()[0] + TextTransformation.intTwoDigits(level);
+        visual.setText(newScreenInfo.replace("", " ").trim());
+    }
+
+    /**
+     * Update elevator movement on screen
+     * @param movement movement to show
+     */
+    public void setMovement(Movement movement) {
+        String movementStr = switch (movement) {
+            case UP -> "↑";
+            case IDLE -> "-";
+            case DOWN -> "↓";
+        };
+
+        String newScreenInfo = movementStr + visual.getText().substring(1);
+        visual.setText(newScreenInfo.replace("", " ").trim());
     }
 
     /**

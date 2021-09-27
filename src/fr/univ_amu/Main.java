@@ -1,5 +1,6 @@
 package fr.univ_amu;
 
+import fr.univ_amu.model.Movement;
 import fr.univ_amu.utils.Configuration;
 import fr.univ_amu.utils.TextTransformation;
 import fr.univ_amu.view.ExternalPanelView;
@@ -12,8 +13,9 @@ public class Main {
 
         new Thread(() -> {
             while (!Thread.interrupted()) {
-                for (int i = 0; i < Configuration.MAX_LEVEL; i++) {
-                    internalPanelView.setScreenText("↑" + TextTransformation.intTwoDigits(i));
+                for (int i = 0; i <= Configuration.MAX_LEVEL; i++) {
+                    internalPanelView.setMovement(Movement.UP);
+                    internalPanelView.setLevel(i);
                     internalPanelView.illuminateButton(i);
                     try {
                         Thread.sleep(1000);
@@ -23,7 +25,8 @@ public class Main {
                 }
 
                 for (int i = Configuration.MAX_LEVEL; i >= 0; i--) {
-                    internalPanelView.setScreenText("↓" + TextTransformation.intTwoDigits(i));
+                    internalPanelView.setMovement(Movement.DOWN);
+                    internalPanelView.setLevel(i);
                     internalPanelView.switchOffButton(i);
                     try {
                         Thread.sleep(1000);
