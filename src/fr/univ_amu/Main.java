@@ -1,5 +1,6 @@
 package fr.univ_amu;
 
+import elevator.*;
 import fr.univ_amu.model.Direction;
 import fr.univ_amu.model.Movement;
 import fr.univ_amu.utils.Configuration;
@@ -9,7 +10,33 @@ import fr.univ_amu.view.InternalPanelView;
 public class Main {
 
     public static void main(String[] args) {
+        PanelSimulator panelSimulator = new PanelSimulator(Configuration.MAX_LEVEL);
+        IPanel panel = panelSimulator;
+        IPanelSimulator panelGUI = panelSimulator;
 
+        ElevatorSimulator elevatorSimulator = new ElevatorSimulator(Configuration.MAX_LEVEL, false);
+        IElevator elevator = elevatorSimulator;
+        IElevatorSimulator elevatorGUI = elevatorSimulator;
+
+        System.out.println(panel.getAndResetDownButton(1));
+        panelGUI.pressDownButton(1);
+        System.out.println(panel.getAndResetDownButton(1));
+        elevator.up();
+
+        while (elevatorGUI.getLevel() < 4) {
+            System.out.print("\r" + elevatorGUI.getLevel());
+        }
+
+        System.out.println();
+
+        elevator.stopNext();
+
+        while (elevator.getState() == IElevator.State.UP) {
+            System.out.print("\r" + elevator.getState());
+        }
+        System.out.println("\r" + elevator.getState());
+
+        System.exit(0);
 
         // ---
 
