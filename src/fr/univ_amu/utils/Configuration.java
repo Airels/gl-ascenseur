@@ -11,7 +11,7 @@ public class Configuration {
     /**
      * Maximum level that can reach elevator
      */
-    public static final int MAX_LEVEL = 10;
+    public static final int MAX_LEVEL = 11;
 
     /**
      * Idle time (in seconds) between two requests
