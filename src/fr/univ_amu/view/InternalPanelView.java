@@ -19,7 +19,7 @@ public class InternalPanelView {
 
     public static final Color defaultButtonColor = new JButton().getBackground();
 
-    private JFrame window;
+    private static JFrame window;
     private JPanel grid, buttonsGrid;
     private JLabel visual;
     private JButton[] buttons;
@@ -47,7 +47,14 @@ public class InternalPanelView {
         grid.add(visual, gridConstraints);
 
         buttonsGrid = new JPanel();
-        buttonsGrid.setLayout(new GridLayout((MAX_LEVEL+3)/2, 2));
+        buttonsGrid.setLayout(new GridLayout(0, 2));
+
+        if (MAX_LEVEL % 2 == 0) {
+            JButton uselessButton = new JButton();
+            uselessButton.setEnabled(false);
+            // uselessButton.setVisible(false);
+            buttonsGrid.add(uselessButton);
+        }
 
         for (int i = MAX_LEVEL; i >= 0; i--) {
             JButton b = new JButton(Integer.toString(i));
@@ -67,10 +74,14 @@ public class InternalPanelView {
         buttonsGrid.add(reset);
         buttons[MAX_LEVEL+2] = reset;
 
-        grid.add(buttonsGrid, gridConstraints);
+        JScrollPane scroll = new JScrollPane(buttonsGrid, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        scroll.setEnabled(true);
+        scroll.setPreferredSize(new Dimension(200, 300));
+
+        grid.add(scroll, gridConstraints);
 
         window.add(grid, BorderLayout.CENTER);
-        window.setLocationRelativeTo(null);
+        // window.setLocationRelativeTo(null);
         window.pack();
         window.setVisible(true);
     }
@@ -124,4 +135,11 @@ public class InternalPanelView {
         buttons[id].setBackground(defaultButtonColor);
     }
 
+    /**
+     * Getter of current internal panels window
+     * @return JFrame of internal view
+     */
+    public static JFrame getJFrame() {
+        return window;
+    }
 }

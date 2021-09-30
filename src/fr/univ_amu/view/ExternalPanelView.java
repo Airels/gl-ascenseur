@@ -14,7 +14,7 @@ import java.util.*;
  */
 public class ExternalPanelView {
 
-    private JFrame window;
+    private static JFrame window;
     private JPanel grid;
     private JButton[] buttonsUp, buttonsDown;
 
@@ -53,8 +53,12 @@ public class ExternalPanelView {
             buttonsDown[i] = bDown;
         }
 
-        window.add(grid);
-        window.setLocationRelativeTo(null);
+        JScrollPane scroll = new JScrollPane(grid, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        scroll.setEnabled(true);
+        scroll.setPreferredSize(new Dimension(200, 400));
+
+        window.add(scroll);
+        window.setLocationRelativeTo(InternalPanelView.getJFrame());
         window.pack();
         window.setVisible(true);
     }
@@ -73,4 +77,11 @@ public class ExternalPanelView {
             buttons[level].setBackground(InternalPanelView.defaultButtonColor);
     }
 
+    /**
+     * Getter of current external panels window
+     * @return JFrame of external view
+     */
+    public static JFrame getJFrame() {
+        return window;
+    }
 }
