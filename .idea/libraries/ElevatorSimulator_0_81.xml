@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="ElevatorSimulator-0.81">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/ElevatorSimulator-0.8.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

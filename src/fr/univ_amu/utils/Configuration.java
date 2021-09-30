@@ -23,6 +23,11 @@ public class Configuration {
      */
     public static final SatisfactionStrategy REQUEST_SATISTACTION_STRATEGY = SatisfactionStrategy.DEFAULT;
 
+    /**
+     * FPS of the elevator simulation representation
+     */
+    public static final int FRAME_RATE_ELEVATOR_REPRESENTATION = 4;
+
 
 
 }

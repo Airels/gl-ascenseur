@@ -4,12 +4,13 @@ import elevator.*;
 import fr.univ_amu.model.Direction;
 import fr.univ_amu.model.Movement;
 import fr.univ_amu.utils.Configuration;
+import fr.univ_amu.view.ElevatorRepresentation;
 import fr.univ_amu.view.ExternalPanelView;
 import fr.univ_amu.view.InternalPanelView;
 
 public class Main {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws InterruptedException {
 
         InternalPanelView internalPanelView = new InternalPanelView();
 
@@ -65,5 +66,16 @@ public class Main {
                 }
             }
         }).start();
+
+        IElevatorSimulator elevatorSimulator = new ElevatorSimulator(Configuration.MAX_LEVEL, false);
+        new Thread(new ElevatorRepresentation(elevatorSimulator)).start();
+
+        elevatorSimulator.up();
+        Thread.sleep(10000);
+        elevatorSimulator.stopNext();
+        while (elevatorSimulator.getState() != IElevator.State.STOP){
+            System.out.println("elevatorSimulator.getState() = " + elevatorSimulator.getState());
+        }
+        elevatorSimulator.down();
     }
 }

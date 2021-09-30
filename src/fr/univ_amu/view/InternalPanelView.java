@@ -19,7 +19,7 @@ public class InternalPanelView {
 
     public static final Color defaultButtonColor = new JButton().getBackground();
 
-    private static JFrame window;
+    private JFrame window;
     private JPanel grid, buttonsGrid;
     private JLabel visual;
     private JButton[] buttons;
@@ -81,7 +81,7 @@ public class InternalPanelView {
         grid.add(scroll, gridConstraints);
 
         window.add(grid, BorderLayout.CENTER);
-        // window.setLocationRelativeTo(null);
+        window.setLocationByPlatform(true);
         window.pack();
         window.setVisible(true);
     }
@@ -133,13 +133,5 @@ public class InternalPanelView {
     public void switchOffButton(int id) {
         if (id >= buttons.length) throw new IllegalArgumentException("Unknown button ID: " + id);
         buttons[id].setBackground(defaultButtonColor);
-    }
-
-    /**
-     * Getter of current internal panels window
-     * @return JFrame of internal view
-     */
-    public static JFrame getJFrame() {
-        return window;
     }
 }
