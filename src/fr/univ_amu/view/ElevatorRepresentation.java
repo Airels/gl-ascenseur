@@ -8,6 +8,10 @@ import fr.univ_amu.view.shapes.Rectangle;
 import javax.swing.*;
 import java.awt.*;
 
+/**
+ * Representation of moving elevator, by using simulation handler
+ * @author VIZCAINO Yohan
+ */
 public class ElevatorRepresentation implements Runnable {
 
     private static JFrame window;

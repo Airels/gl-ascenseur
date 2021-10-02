@@ -1,7 +1,7 @@
 package fr.univ_amu.model;
 
 /**
- * Movements state of the elevator
+ * Movement of the elevator, used to sort new requests according to selected satisfaction strategy
  */
 public enum Movement {
     UP,

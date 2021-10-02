@@ -1,7 +1,7 @@
 package fr.univ_amu.model;
 
 /**
- * Directions of lift
+ * Requested direction by user
  */
 public enum Direction {
     UP,
