@@ -1,8 +1,10 @@
 package fr.univ_amu.view;
 
+import elevator.IPanelSimulator;
 import fr.univ_amu.controller.InternalPanelController;
 import fr.univ_amu.model.ButtonType;
 import fr.univ_amu.model.Movement;
+import fr.univ_amu.utils.Configuration;
 import fr.univ_amu.utils.TextTransformation;
 
 import javax.swing.*;
@@ -15,7 +17,7 @@ import static fr.univ_amu.utils.Configuration.MAX_LEVEL;
  * Visual representation of the internal panel command control of the elevator
  * @author VIZCAINO Yohan
  */
-public class InternalPanelView {
+public class InternalPanelView implements Runnable {
 
     public static final Color defaultButtonColor = new JButton().getBackground();
 
@@ -24,11 +26,14 @@ public class InternalPanelView {
     private JLabel visual;
     private JButton[] buttons;
 
+    private IPanelSimulator panelSimulator;
 
     /**
      * Default constructor
      */
-    public InternalPanelView() {
+    public InternalPanelView(IPanelSimulator panelSimulator) {
+        this.panelSimulator = panelSimulator;
+
         buttons = new JButton[MAX_LEVEL+3];
 
         window = new JFrame("Internal Panel");
@@ -39,7 +44,7 @@ public class InternalPanelView {
         GridBagConstraints gridConstraints = new GridBagConstraints();
         grid.setLayout(new GridBagLayout());
 
-        visual = new JLabel("-00");
+        visual = new JLabel("- 0 0");
         visual.setHorizontalAlignment(SwingConstants.CENTER);
         visual.setFont(new Font("Consolas", Font.BOLD, 50));
         visual.setForeground(Color.RED);
@@ -59,18 +64,18 @@ public class InternalPanelView {
         for (int i = MAX_LEVEL; i >= 0; i--) {
             JButton b = new JButton(Integer.toString(i));
             b.setName(Integer.toString(i));
-            b.addActionListener(new InternalPanelController(i));
+            b.addActionListener(new InternalPanelController(panelSimulator, i));
             buttonsGrid.add(b);
             buttons[i] = b;
         }
 
         JButton emergency = new JButton(ButtonType.BREAK.toString());
-        emergency.addActionListener(new InternalPanelController(ButtonType.BREAK));
+        emergency.addActionListener(new InternalPanelController(panelSimulator, ButtonType.BREAK));
         buttonsGrid.add(emergency);
         buttons[MAX_LEVEL+1] = emergency;
 
         JButton reset = new JButton(ButtonType.RESET.toString());
-        reset.addActionListener(new InternalPanelController(ButtonType.RESET));
+        reset.addActionListener(new InternalPanelController(panelSimulator, ButtonType.RESET));
         buttonsGrid.add(reset);
         buttons[MAX_LEVEL+2] = reset;
 
@@ -133,5 +138,27 @@ public class InternalPanelView {
     public void switchOffButton(int id) {
         if (id >= buttons.length) throw new IllegalArgumentException("Unknown button ID: " + id);
         buttons[id].setBackground(defaultButtonColor);
+    }
+
+    public void switchOffAllButtons() {
+        for (int i = 0; i <= MAX_LEVEL; i++)
+            switchOffButton(i);
+    }
+
+    @Override
+    public void run() {
+        while (!Thread.interrupted()) {
+            for (int i = 0; i <= MAX_LEVEL; i++) {
+                if (panelSimulator.getFloorLight(i))
+                    illuminateButton(i);
+                else
+                    switchOffButton(i);
+
+                panelSimulator.getMessage(); // TODO
+            }
+            try {
+                Thread.sleep(Configuration.FRAME_RATE_GUI);
+            } catch (InterruptedException ignored) {}
+        }
     }
 }

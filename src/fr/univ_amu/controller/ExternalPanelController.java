@@ -1,5 +1,6 @@
 package fr.univ_amu.controller;
 
+import elevator.IPanelSimulator;
 import fr.univ_amu.model.Direction;
 
 import java.awt.event.ActionEvent;
@@ -14,14 +15,19 @@ public class ExternalPanelController implements ActionListener {
 
     private int level;
     private Direction direction;
+    private IPanelSimulator panelSimulator;
 
-    public ExternalPanelController(int level, Direction direction) {
+    public ExternalPanelController(IPanelSimulator panelSimulator, int level, Direction direction) {
         this.level = level;
         this.direction = direction;
+        this.panelSimulator = panelSimulator;
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        System.out.println(level + " " + direction);
+        switch (direction) {
+            case UP -> panelSimulator.pressUpButton(level);
+            case DOWN -> panelSimulator.pressDownButton(level);
+        }
     }
 }

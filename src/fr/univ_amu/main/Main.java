@@ -1,16 +1,39 @@
-package fr.univ_amu;
+package fr.univ_amu.main;
 
 import elevator.*;
 import fr.univ_amu.model.Direction;
 import fr.univ_amu.model.Movement;
+import fr.univ_amu.model.controlCommand.Supervisor;
+import fr.univ_amu.model.exceptions.UnhandledStrategyException;
 import fr.univ_amu.utils.Configuration;
+import fr.univ_amu.utils.ExceptionHandler;
+import fr.univ_amu.utils.SatisfactionStrategy;
 import fr.univ_amu.view.ElevatorRepresentation;
 import fr.univ_amu.view.ExternalPanelView;
 import fr.univ_amu.view.InternalPanelView;
 
 public class Main {
 
-    public static void main(String[] args) throws InterruptedException {
+    public static void main(String[] args) {
+        ElevatorSimulator elevatorSimulator = new ElevatorSimulator(Configuration.MAX_LEVEL, false);
+        PanelSimulator panelSimulator = new PanelSimulator(Configuration.MAX_LEVEL);
+
+        // INIT BACKEND
+        Supervisor supervisor = new Supervisor(panelSimulator, elevatorSimulator);
+
+        // INIT FRONTEND
+        InternalPanelView internalPanelView = new InternalPanelView(panelSimulator);
+        ExternalPanelView externalPanelView = new ExternalPanelView(panelSimulator);
+        ElevatorRepresentation elevatorRepresentation = new ElevatorRepresentation(elevatorSimulator);
+
+        new Thread(supervisor).start();
+        new Thread(internalPanelView).start();
+        new Thread(externalPanelView).start();
+        new Thread(elevatorRepresentation).start();
+    }
+
+    /*
+    public void testInterface() throws InterruptedException {
 
         InternalPanelView internalPanelView = new InternalPanelView();
 
@@ -78,4 +101,6 @@ public class Main {
         }
         elevatorSimulator.down();
     }
+
+     */
 }

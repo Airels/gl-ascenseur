@@ -31,11 +31,16 @@ public interface Scheduler {
      *
      * @return
      */
-    public Request getAndResetCurrentRequest();
+    Request getAndResetCurrentRequest();
 
     /**
      * @param request
      */
-    public void requestSatisfied(Request request);
+    void requestSatisfied(Request request);
+
+    /**
+     * Clear all pending requests
+     */
+    void clearRequests();
 
 }

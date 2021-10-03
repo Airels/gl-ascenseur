@@ -1,5 +1,7 @@
 package fr.univ_amu.model.controlCommand.schedulers;
 
+import fr.univ_amu.model.exceptions.UnhandledStrategyException;
+import fr.univ_amu.utils.ExceptionHandler;
 import fr.univ_amu.utils.SatisfactionStrategy;
 
 /**
@@ -7,24 +9,27 @@ import fr.univ_amu.utils.SatisfactionStrategy;
  *
  * @author VIZCAINO Yohan
  */
-public class SchedulerBuilder {
+public final class SchedulerBuilder {
 
     /**
      * Default constructor
      */
-    public SchedulerBuilder() {
+    private SchedulerBuilder() {
+        ExceptionHandler.showAndExit(new IllegalStateException("SchedulerBuilder cannot be instantiated"));
     }
-
 
     /**
      * Build new scheduler depending on requested satisfaction strategy
      *
-     * @param strategy
+     * @param strategy strategy to build
      * @return
      */
-    public static Scheduler build(SatisfactionStrategy strategy) {
-        // TODO implement here
-        return null;
+    public static Scheduler build(SatisfactionStrategy strategy) throws UnhandledStrategyException {
+        return switch (strategy) {
+            case DEFAULT -> new DefaultScheduler();
+            case FIFO -> new FIFOScheduler();
+            default -> throw new UnhandledStrategyException(strategy);
+        };
     }
 
 }

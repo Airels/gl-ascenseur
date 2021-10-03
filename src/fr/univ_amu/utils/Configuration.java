@@ -26,8 +26,16 @@ public class Configuration {
     /**
      * FPS of the elevator simulation representation
      */
-    public static final int FRAME_RATE_ELEVATOR_REPRESENTATION = 4;
+    public static final int FRAME_RATE_GUI = 4;
 
 
+    /**
+     * TODO
+     */
+    public static final int PANEL_MANAGER_TICK_TIME = 250;
 
+    /**
+     * TODO
+     */
+    public static final int SUPERVISOR_TICK_TIME = 125;
 }

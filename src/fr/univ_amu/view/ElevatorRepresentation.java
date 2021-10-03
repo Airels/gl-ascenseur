@@ -66,7 +66,7 @@ public class ElevatorRepresentation implements Runnable {
         while (!Thread.interrupted()) {
             elevator.marginFromBottom(elevatorSimulator.getLevel());
             try {
-                Thread.sleep(1000/Configuration.FRAME_RATE_ELEVATOR_REPRESENTATION);
+                Thread.sleep(1000/Configuration.FRAME_RATE_GUI);
             } catch (InterruptedException ignored) { }
         }
     }

@@ -1,9 +1,14 @@
 package fr.univ_amu.model.controlCommand;
 
 import elevator.IElevator;
+import elevator.IPanel;
 import fr.univ_amu.model.Movement;
 import fr.univ_amu.model.Request;
 import fr.univ_amu.model.controlCommand.schedulers.Scheduler;
+import fr.univ_amu.model.controlCommand.schedulers.SchedulerBuilder;
+import fr.univ_amu.model.exceptions.UnhandledStrategyException;
+import fr.univ_amu.utils.Configuration;
+import fr.univ_amu.utils.ExceptionHandler;
 
 /**
  * The main system of the elevator, who controls everything and takes action decided by schedulers
@@ -23,7 +28,7 @@ public class Supervisor implements Runnable {
     /**
      *
      */
-    private boolean systemHalted;
+    private boolean isSystemHalted;
     /**
      *
      */
@@ -44,7 +49,16 @@ public class Supervisor implements Runnable {
     /**
      * Default constructor
      */
-    public Supervisor() {
+    public Supervisor(IPanel panel, IElevator elevator) {
+        try {
+            scheduler = SchedulerBuilder.build(Configuration.REQUEST_SATISTACTION_STRATEGY);
+        } catch (UnhandledStrategyException e) {
+            ExceptionHandler.showAndExit(e);
+        }
+
+        this.isSystemHalted = false;
+        this.panelManager = new PanelManager(panel,this);
+        this.elevator = elevator;
     }
 
     /**
@@ -60,14 +74,16 @@ public class Supervisor implements Runnable {
      * @param request
      */
     public void addRequest(Request request) {
-        // TODO implement here
+        if (!isSystemHalted)
+            scheduler.addRequest(request);
     }
 
     /**
      *
      */
     private void sortRequests() {
-        // TODO implement here
+        if (scheduler.sortRequests(travelDirection))
+            executeRequest(scheduler.getAndResetCurrentRequest());
     }
 
     /**
@@ -76,18 +92,33 @@ public class Supervisor implements Runnable {
      * @param request
      */
     private void executeRequest(Request request) {
-        // TODO implement here
+        currentRequest = request;
     }
 
     /**
-     * Toggle the emergency elevator state. The elevator will remain locked until next call
+     * Enable the emergency elevator state. The elevator will remain locked until emergency state removal
      */
-    public void toggleEmergency() {
-        // TODO implement here
+    public void enableEmergenry() {
+        isSystemHalted = true;
+        scheduler.clearRequests();
+    }
+
+    /**
+     * Disable the emergency elevator state.
+     */
+    public void disableEmergency() {
+        isSystemHalted = false;
     }
 
     @Override
     public void run() {
+        new Thread(panelManager).start();
 
+        while (!Thread.interrupted()) {
+            tick();
+            try {
+                Thread.sleep(Configuration.SUPERVISOR_TICK_TIME);
+            } catch (InterruptedException ignored) {}
+        }
     }
 }

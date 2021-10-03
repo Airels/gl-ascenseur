@@ -43,4 +43,9 @@ public class DefaultScheduler implements Scheduler {
     public void requestSatisfied(Request request) {
 
     }
+
+    @Override
+    public void clearRequests() {
+
+    }
 }

@@ -1,5 +1,6 @@
 package fr.univ_amu.controller;
 
+import elevator.IPanelSimulator;
 import fr.univ_amu.model.ButtonType;
 
 import java.awt.event.ActionEvent;
@@ -14,12 +15,15 @@ public class InternalPanelController implements ActionListener {
 
     private int level;
     private ButtonType buttonType;
+    private IPanelSimulator panelSimulator;
 
-    public InternalPanelController(int level) {
+    public InternalPanelController(IPanelSimulator panelSimulator, int level) {
+        this.panelSimulator = panelSimulator;
         this.level = level;
     }
 
-    public InternalPanelController(ButtonType buttonType) {
+    public InternalPanelController(IPanelSimulator panelSimulator, ButtonType buttonType) {
+        this.panelSimulator = panelSimulator;
         level = -1;
         this.buttonType = buttonType;
     }
@@ -27,9 +31,13 @@ public class InternalPanelController implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent e) {
         if (level >= 0)
-            System.out.println("internal " + level);
-        else
-            System.out.println(buttonType);
+            panelSimulator.pressFloorButton(level);
+        else {
+            switch (buttonType) {
+                case BREAK -> panelSimulator.pressStopButton(); // TODO a revoir pour reset toutes les lumières
+                case RESET -> panelSimulator.pressInitButton();
+            }
+        }
     }
 }
 

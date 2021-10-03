@@ -1,110 +1,118 @@
 package fr.univ_amu.model;
 
-import java.util.*;
-
 /**
  * User request representation, created when user calls elevator or order to go to another level. Works like a Promise
+ *
  * @author VIZCAINO Yohan
  */
 public class Request {
 
     /**
-     * Default constructor
-     */
-    public Request() {
-    }
-
-    /**
-     * 
+     *
      */
     private RequestOrigin requestOrigin;
-
     /**
      * Requested direction (outside panel request)
      */
     private Direction direction;
-
     /**
      * Source request level (outside panel)
      */
     private int sourceLevel;
-
     /**
      * Level targeted by user (inside panel)
      */
     private int targetLevel;
-
     /**
      * Time when request was created
      */
     private Timestamp requestCreationTime;
 
     /**
-     * 
+     * Default constructor
      */
-    private boolean priority;
+    private Request(RequestOrigin requestOrigin, Direction direction, int sourceLevel, int targetLevel) {
+        this.requestOrigin = requestOrigin;
+        this.direction = direction;
+        this.sourceLevel = sourceLevel;
+        this.targetLevel = targetLevel;
+        this.requestCreationTime = new Timestamp();
+    }
 
+    /**
+     * Constructor for inside the elevator's requests
+     */
+    public Request(int targetLevel) {
+        this(RequestOrigin.INSIDE, null, -1, targetLevel);
+    }
 
+    /**
+     * Constructor for outside the elevator's requests
+     */
+    public Request(Direction direction, int sourceLevel) {
+        this(RequestOrigin.OUTSIDE, direction, sourceLevel, -1);
+    }
 
-
-
-
-
-
-
-
+    /**
+     * Called when user clicked on RESET button after an emergency state
+     * @return reset request
+     */
+    public static Request buildResetRequest() {
+        return new Request(RequestOrigin.SYSTEM, Direction.DOWN, -1, 0);
+    }
 
     /**
      * Origin of the request (if is inside or outside of the elevator)
+     *
      * @return
      */
     public RequestOrigin getRequestOrigin() {
-        // TODO implement here
-        return null;
+        return requestOrigin;
     }
 
     /**
      * Desired direction of the request (UP or DOWN), only for outside requests
+     *
      * @return
      */
     public Direction getDirection() {
-        // TODO implement here
-        return null;
+        if (requestOrigin != RequestOrigin.OUTSIDE)
+            throw new IllegalStateException("Direction available for OUTSIDE requests only. Current: INSIDE");
+
+        return direction;
     }
 
     /**
      * Source level of request
+     *
      * @return
      */
     public int getSourceLevel() {
-        // TODO implement here
-        return 0;
+        if (sourceLevel == -1)
+            throw new IllegalStateException("Source level available for OUTSIDE requests only. Current: INSIDE");
+
+        return sourceLevel;
     }
 
     /**
      * Target level or request
+     *
      * @return
      */
     public int getTargetLevel() {
-        // TODO implement here
+        if (targetLevel == -1)
+            throw new IllegalStateException("Source level available for INSIDE requests only. Current: OUTSIDE");
+
         return 0;
     }
 
     /**
      * Gives timestamp when request was created
+     *
      * @return
      */
     public Timestamp getCreationTime() {
-        // TODO implement here
-        return null;
-    }
-
-    /**
-     * @return
-     */
-    public boolean isPriority() {
-        // TODO implement here
-        return false;
+        return requestCreationTime;
     }
 
 }
