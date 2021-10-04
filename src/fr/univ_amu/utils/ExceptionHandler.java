@@ -1,6 +1,7 @@
 package fr.univ_amu.utils;
 
 import javax.swing.*;
+import java.util.Arrays;
 
 /**
  * TODO
@@ -14,12 +15,15 @@ public class ExceptionHandler {
     public static void showAndExit(Exception e) {
         e.printStackTrace();
 
+        String title = "The Elevator - Catastrophic failure";
         StringBuilder message = new StringBuilder();
-        message.append(e);
-        message.append("\n");
-        message.append("Application will now close");
+        message.append("An unrecoverable error occured :").append("\n\n")
+                .append(e).append("\n")
+                .append(Arrays.toString(e.getStackTrace()))
+                .append("\n\n")
+                .append("Application will now close.");
 
-        JOptionPane.showMessageDialog(null, message.toString(), "A critical error occured!", JOptionPane.ERROR_MESSAGE);
+        JOptionPane.showMessageDialog(null, message.toString(), title, JOptionPane.ERROR_MESSAGE);
         System.exit(1);
     }
 }
