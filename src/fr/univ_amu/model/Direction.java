@@ -5,5 +5,12 @@ package fr.univ_amu.model;
  */
 public enum Direction {
     UP,
-    DOWN
+    DOWN;
+
+    public static Movement toMovement(Direction direction) {
+        return switch (direction) {
+            case UP -> Movement.UP;
+            case DOWN -> Movement.DOWN;
+        };
+    }
 }

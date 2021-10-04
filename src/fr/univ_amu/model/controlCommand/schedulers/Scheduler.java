@@ -20,11 +20,12 @@ public interface Scheduler {
     /**
      * Sort pending requests, conditions are set up by chosen satisfaction strategy
      *
+     * @param currentLevel current level of the elevator
      * @param movement current movement of the elevator
      * @return true if current request has changed, false otherwise
      * @see SatisfactionStrategy
      */
-    boolean sortRequests(Movement movement);
+    boolean sortRequests(int currentLevel, Movement movement);
 
     /**
      * Getter to retrieve current request, and reset boolean if current request changed to false, because current request has been picked up

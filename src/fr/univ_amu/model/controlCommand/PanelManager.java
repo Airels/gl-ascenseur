@@ -4,6 +4,7 @@ import elevator.IPanel;
 import fr.univ_amu.model.Direction;
 import fr.univ_amu.model.Movement;
 import fr.univ_amu.model.Request;
+import fr.univ_amu.model.RequestOrigin;
 import fr.univ_amu.utils.Configuration;
 import fr.univ_amu.utils.TextTransformation;
 
@@ -89,7 +90,7 @@ public class PanelManager implements Runnable {
             for (int i = 0; i <= Configuration.MAX_LEVEL; i++) {
                 if (panel.getAndResetFloorButton(i)) {
                     if (!supervisor.isSystemHalted()) {
-                        supervisor.addRequest(new Request(i));
+                        supervisor.addRequest(new Request(supervisor.getCurrentLevel(), i));
                         isEventByUser = true;
                         panel.setFloorLight(i, true);
                     }

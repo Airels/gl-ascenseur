@@ -86,7 +86,7 @@ public class Supervisor implements Runnable {
             int requestedLevel = requestedLevel();
             if (requestedLevel == currentLevel) {
                 requestSatisfied();
-                if (scheduler.sortRequests(currentTravelDirection)) {
+                if (scheduler.sortRequests(currentLevel, currentTravelDirection)) {
                     executeRequest(scheduler.getCurrentRequest());
                 }
                 else {
@@ -101,7 +101,7 @@ public class Supervisor implements Runnable {
         }
 
         if (panelManager.isEventAndReset()) {
-            if (scheduler.sortRequests(currentTravelDirection)) {
+            if (scheduler.sortRequests(currentLevel, currentTravelDirection)) {
                 executeRequest(scheduler.getCurrentRequest());
             }
         }
@@ -216,6 +216,14 @@ public class Supervisor implements Runnable {
             case INSIDE -> request.getTargetLevel();
             case OUTSIDE -> request.getSourceLevel();
         };
+    }
+
+    /**
+     * Get current level of the elevator
+     * @return int for the current level
+     */
+    public int getCurrentLevel() {
+        return currentLevel;
     }
 
     @Override

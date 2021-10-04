@@ -27,7 +27,7 @@ public class FIFOScheduler implements Scheduler {
     }
 
     @Override
-    public boolean sortRequests(Movement movement) {
+    public boolean sortRequests(int currentLevel, Movement movement) {
         if (pendingRequests.isEmpty()) {
             currentRequest = null;
             return false;

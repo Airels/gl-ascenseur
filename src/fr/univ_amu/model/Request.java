@@ -42,8 +42,8 @@ public class Request {
     /**
      * Constructor for inside the elevator's requests
      */
-    public Request(int targetLevel) {
-        this(RequestOrigin.INSIDE, null, -1, targetLevel);
+    public Request(int sourceLevel, int targetLevel) {
+        this(RequestOrigin.INSIDE, null, sourceLevel, targetLevel);
     }
 
     /**
@@ -68,8 +68,12 @@ public class Request {
      * @return
      */
     public Direction getDirection() {
-        if (requestOrigin != RequestOrigin.OUTSIDE)
-            throw new IllegalStateException("Direction available for OUTSIDE requests only. Current: INSIDE");
+        if (direction == null) {
+            if (sourceLevel - targetLevel > 0)
+                direction = Direction.DOWN;
+            else
+                direction = Direction.UP;
+        }
 
         return direction;
     }
@@ -80,9 +84,6 @@ public class Request {
      * @return
      */
     public int getSourceLevel() {
-        if (sourceLevel == -1)
-            throw new IllegalStateException("Source level available for OUTSIDE requests only. Current: INSIDE");
-
         return sourceLevel;
     }
 
@@ -92,8 +93,8 @@ public class Request {
      * @return
      */
     public int getTargetLevel() {
-        if (targetLevel == -1)
-            throw new IllegalStateException("Source level available for INSIDE requests only. Current: OUTSIDE");
+        if (sourceLevel == -1)
+            throw new IllegalStateException("Target level available for INSIDE requests only. Current: OUTSIDE");
 
         return targetLevel;
     }
