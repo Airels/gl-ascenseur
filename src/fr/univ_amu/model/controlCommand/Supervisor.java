@@ -87,7 +87,7 @@ public class Supervisor implements Runnable {
             if (requestedLevel == currentLevel) {
                 requestSatisfied();
                 if (scheduler.sortRequests(currentTravelDirection)) {
-                    executeRequest(scheduler.getAndResetCurrentRequest());
+                    executeRequest(scheduler.getCurrentRequest());
                 }
                 else {
                     currentTravelDirection = Movement.IDLE;
@@ -102,7 +102,7 @@ public class Supervisor implements Runnable {
 
         if (panelManager.isEventAndReset()) {
             if (scheduler.sortRequests(currentTravelDirection)) {
-                executeRequest(scheduler.getAndResetCurrentRequest());
+                executeRequest(scheduler.getCurrentRequest());
             }
         }
 

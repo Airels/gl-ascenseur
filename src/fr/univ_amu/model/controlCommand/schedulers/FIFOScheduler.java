@@ -16,11 +16,9 @@ public class FIFOScheduler implements Scheduler {
 
     private ArrayDeque<Request> pendingRequests;
     private Request currentRequest;
-    private boolean requestUpdated;
 
     public FIFOScheduler() {
         pendingRequests = new ArrayDeque<>();
-        requestUpdated = false;
     }
 
     @Override
@@ -37,7 +35,6 @@ public class FIFOScheduler implements Scheduler {
 
         if (currentRequest != pendingRequests.getFirst()) {
             currentRequest = pendingRequests.getFirst();
-            requestUpdated = true;
             return true;
         }
 
@@ -45,8 +42,7 @@ public class FIFOScheduler implements Scheduler {
     }
 
     @Override
-    public Request getAndResetCurrentRequest() {
-        requestUpdated = false;
+    public Request getCurrentRequest() {
         return currentRequest;
     }
 

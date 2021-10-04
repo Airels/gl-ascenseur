@@ -35,7 +35,7 @@ public class DefaultScheduler implements Scheduler {
     }
 
     @Override
-    public Request getAndResetCurrentRequest() {
+    public Request getCurrentRequest() {
         return null;
     }
 

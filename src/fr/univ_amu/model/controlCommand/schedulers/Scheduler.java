@@ -31,7 +31,7 @@ public interface Scheduler {
      *
      * @return
      */
-    Request getAndResetCurrentRequest();
+    Request getCurrentRequest();
 
     /**
      * @param request
