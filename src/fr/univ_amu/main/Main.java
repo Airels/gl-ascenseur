@@ -15,8 +15,6 @@ import fr.univ_amu.view.InternalPanelView;
 public class Main {
 
     public static void main(String[] args) {
-        ExceptionHandler.showAndExit(new IllegalStateException("Eddy est moche"));
-
         ElevatorSimulator elevatorSimulator = new ElevatorSimulator(Configuration.MAX_LEVEL, false);
         PanelSimulator panelSimulator = new PanelSimulator(Configuration.MAX_LEVEL);
 
