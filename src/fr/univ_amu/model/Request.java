@@ -68,12 +68,8 @@ public class Request {
      * @return
      */
     public Direction getDirection() {
-        if (direction == null) {
-            if (sourceLevel - targetLevel > 0)
-                direction = Direction.DOWN;
-            else
-                direction = Direction.UP;
-        }
+        if (sourceLevel == -1)
+            throw new IllegalStateException("Target level available for OUTSIDE requests only. Current: INSIDE");
 
         return direction;
     }
@@ -113,12 +109,12 @@ public class Request {
     public String toString() {
         StringBuilder strBuilder = new StringBuilder();
 
-        strBuilder.append("Request {").append("\n")
-                .append("\tOrigin: ").append(requestOrigin).append("\n")
-                .append("\tDirection: ").append(direction).append("\n")
-                .append("\tSource level: ").append(sourceLevel).append("\n")
-                .append("\tTarget level: ").append(targetLevel).append("\n")
-                .append("\tCreation time: ").append(requestCreationTime.getMilliseconds()).append("\n")
+        strBuilder.append("Request {").append("")
+                .append("Origin: ").append(requestOrigin).append(", ")
+                .append("Direction: ").append(direction).append(", ")
+                .append("Source level: ").append(sourceLevel).append(", ")
+                .append("Target level: ").append(targetLevel).append(", ")
+                .append("Creation time: ").append(requestCreationTime.getMilliseconds())
                 .append("}");
 
         return strBuilder.toString();

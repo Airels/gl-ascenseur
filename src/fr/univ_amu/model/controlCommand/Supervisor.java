@@ -88,14 +88,14 @@ public class Supervisor implements Runnable {
                 requestSatisfied();
                 if (scheduler.sortRequests(currentLevel, currentTravelDirection)) {
                     executeRequest(scheduler.getCurrentRequest());
-                }
-                else {
+                } else {
                     currentTravelDirection = Movement.IDLE;
                     panelManager.updateMessage(currentTravelDirection, currentLevel);
                 }
             }
-            else if (currentRequest != null && Math.abs(currentLevel - requestedLevel()) == 1)
+            else if (currentRequest != null && Math.abs(currentLevel - requestedLevel()) == 1) {
                 elevator.stopNext();
+            }
 
             panelManager.updateMessage(currentTravelDirection, currentLevel);
         }
@@ -139,15 +139,17 @@ public class Supervisor implements Runnable {
                 currentTravelDirection = Movement.UP;
                 elevator.up();
             }
-
-            if (currentRequest != null && Math.abs(currentLevel - requestedLevel) == 1)
-                elevator.stopNext();
         } else {
             if (currentLevel - requestedLevel > 0) {
                 currentTravelDirection = Movement.DOWN;
             } else {
                 currentTravelDirection = Movement.UP;
             }
+        }
+
+        if (elevator.getState() == IElevator.State.UP || elevator.getState() == IElevator.State.DOWN) {
+            if (currentRequest != null && Math.abs(currentLevel - requestedLevel) == 1)
+                elevator.stopNext();
         }
 
         panelManager.updateMessage(currentTravelDirection, currentLevel);
