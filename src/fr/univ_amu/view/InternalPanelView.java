@@ -25,14 +25,20 @@ public class InternalPanelView implements Runnable {
     private JPanel grid, buttonsGrid;
     private JLabel visual;
     private JButton[] buttons;
+    private boolean inEmergency;
 
     private IPanelSimulator panelSimulator;
+
+    private static InternalPanelView internalPanelView;
 
     /**
      * Default constructor
      */
     public InternalPanelView(IPanelSimulator panelSimulator) {
+        internalPanelView = this;
+
         this.panelSimulator = panelSimulator;
+        inEmergency = false;
 
         buttons = new JButton[MAX_LEVEL+3];
 
@@ -123,6 +129,8 @@ public class InternalPanelView implements Runnable {
      * @param id level or MAX_LEVEL+1 for emergency, +2 for reset
      */
     public void illuminateButton(int id) {
+        if (inEmergency) return;
+
         if (id >= buttons.length) throw new IllegalArgumentException("Unknown button ID: " + id);
         if (id == MAX_LEVEL+1)
             buttons[id].setBackground(Color.RED);
@@ -140,11 +148,6 @@ public class InternalPanelView implements Runnable {
         buttons[id].setBackground(defaultButtonColor);
     }
 
-    public void switchOffAllButtons() {
-        for (int i = 0; i <= MAX_LEVEL; i++)
-            switchOffButton(i);
-    }
-
     @Override
     public void run() {
         while (!Thread.interrupted()) {
@@ -160,5 +163,9 @@ public class InternalPanelView implements Runnable {
                 Thread.sleep(Configuration.FRAME_RATE_GUI);
             } catch (InterruptedException ignored) {}
         }
+    }
+
+    public static InternalPanelView getInstance() {
+        return internalPanelView;
     }
 }

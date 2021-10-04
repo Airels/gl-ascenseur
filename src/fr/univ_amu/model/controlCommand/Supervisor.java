@@ -101,6 +101,7 @@ public class Supervisor implements Runnable {
     public void enableEmergenry() {
         isSystemHalted = true;
         scheduler.clearRequests();
+        System.out.println("HALT");
     }
 
     /**
@@ -108,6 +109,15 @@ public class Supervisor implements Runnable {
      */
     public void disableEmergency() {
         isSystemHalted = false;
+        System.out.println("HALT Interrupted");
+    }
+
+    /**
+     * Know if system is halted
+     * @return boolean true if halted, false otherwise
+     */
+    public boolean isSystemHalted() {
+        return isSystemHalted;
     }
 
     @Override

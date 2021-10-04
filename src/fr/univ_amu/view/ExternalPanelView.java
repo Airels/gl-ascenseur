@@ -23,10 +23,14 @@ public class ExternalPanelView implements Runnable {
 
     private IPanelSimulator panelSimulator;
 
+    private static ExternalPanelView externalPanelView;
+
     /**
      * Default constructor
      */
     public ExternalPanelView(IPanelSimulator panelSimulator) {
+        externalPanelView = this;
+
         this.panelSimulator = panelSimulator;
 
         buttonsUp = new JButton[Configuration.MAX_LEVEL+1];
@@ -96,5 +100,9 @@ public class ExternalPanelView implements Runnable {
                 Thread.sleep(Configuration.FRAME_RATE_GUI);
             } catch (InterruptedException ignored) {}
         }
+    }
+
+    public static ExternalPanelView getInstance() {
+        return externalPanelView;
     }
 }

@@ -63,6 +63,21 @@ public class PanelManager implements Runnable {
     public void tick() {
         if (panel.getAndResetStopButton()) {
             supervisor.enableEmergenry();
+
+            for (int i = 0; i < Configuration.MAX_LEVEL; i++) {
+                panel.setFloorLight(i, false);
+                panel.setUpLight(i, false);
+                panel.setDownLight(i, false);
+            }
+
+            if (panel.getAndResetButtonsSensor()) {
+                for (int i = 0; i <= Configuration.MAX_LEVEL; i++) {
+                    panel.getAndResetFloorButton(i);
+                    panel.getAndResetUpButton(i);
+                    panel.getAndResetDownButton(i);
+                }
+            }
+
             return;
         }
 
@@ -72,18 +87,24 @@ public class PanelManager implements Runnable {
         if (panel.getAndResetButtonsSensor()) {
             for (int i = 0; i <= Configuration.MAX_LEVEL; i++) {
                 if (panel.getAndResetFloorButton(i)) {
-                    supervisor.addRequest(new Request(i));
-                    panel.setFloorLight(i, true);
+                    if (!supervisor.isSystemHalted()) {
+                        supervisor.addRequest(new Request(i));
+                        panel.setFloorLight(i, true);
+                    }
                 }
 
                 if (panel.getAndResetDownButton(i)) {
-                    supervisor.addRequest(new Request(Direction.DOWN, i));
-                    panel.setDownLight(i, true);
+                    if (!supervisor.isSystemHalted()) {
+                        supervisor.addRequest(new Request(Direction.DOWN, i));
+                        panel.setDownLight(i, true);
+                    }
                 }
 
                 if (panel.getAndResetUpButton(i)) {
-                    supervisor.addRequest(new Request(Direction.UP, i));
-                    panel.setUpLight(i, true);
+                    if (!supervisor.isSystemHalted()) {
+                        supervisor.addRequest(new Request(Direction.UP, i));
+                        panel.setUpLight(i, true);
+                    }
                 }
             }
         }
