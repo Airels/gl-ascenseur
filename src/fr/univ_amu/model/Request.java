@@ -54,14 +54,6 @@ public class Request {
     }
 
     /**
-     * Called when user clicked on RESET button after an emergency state
-     * @return reset request
-     */
-    public static Request buildResetRequest() {
-        return new Request(RequestOrigin.SYSTEM, Direction.DOWN, -1, 0);
-    }
-
-    /**
      * Origin of the request (if is inside or outside of the elevator)
      *
      * @return

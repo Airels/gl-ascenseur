@@ -4,7 +4,6 @@ import elevator.IPanel;
 import fr.univ_amu.model.Direction;
 import fr.univ_amu.model.Movement;
 import fr.univ_amu.model.Request;
-import fr.univ_amu.model.controlCommand.schedulers.Scheduler;
 import fr.univ_amu.utils.Configuration;
 import fr.univ_amu.utils.TextTransformation;
 
@@ -84,7 +83,7 @@ public class PanelManager implements Runnable {
         }
 
         if (panel.getAndResetInitButton())
-            supervisor.disableEmergency();
+            supervisor.requestDisableEmergency();
 
         if (panel.getAndResetButtonsSensor()) {
             for (int i = 0; i <= Configuration.MAX_LEVEL; i++) {
@@ -146,5 +145,19 @@ public class PanelManager implements Runnable {
         stringBuilder.append(TextTransformation.intTwoDigits(currentLevel));
 
         panel.setMessage(stringBuilder.toString());
+    }
+
+    /**
+     * Shows to user an emergency message when emergency is triggered
+     */
+    public void sendEmergencyMessage() {
+        panel.setMessage("HS!");
+    }
+
+    /**
+     * Shows a reset message to user when elevator is reset
+     */
+    public void sendResetMessage() {
+        panel.setMessage("RST");
     }
 }

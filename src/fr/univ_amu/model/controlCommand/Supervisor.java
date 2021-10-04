@@ -46,6 +46,8 @@ public class Supervisor implements Runnable {
      */
     private IElevator elevator;
 
+    private boolean requestedDisableEmergency;
+
     /**
      * Default constructor
      */
@@ -61,13 +63,24 @@ public class Supervisor implements Runnable {
         this.elevator = elevator;
         currentLevel = 0;
         currentTravelDirection = Movement.IDLE;
+        requestedDisableEmergency = false;
     }
 
     /**
      * Unit of computation time of Supervisor
      */
     public void tick() {
+        if (requestedDisableEmergency)
+            disableEmergency();
+
+        if (isSystemHalted) return;
+
         if (elevator.getAndResetStageSensor()) {
+            if (requestedDisableEmergency) {
+                requestedDisableEmergency = false;
+                return;
+            }
+
             currentLevel += (currentTravelDirection == Movement.UP) ? 1 : -1;
 
             int requestedLevel = requestedLevel();
@@ -103,16 +116,7 @@ public class Supervisor implements Runnable {
      * @param request
      */
     public void addRequest(Request request) {
-        if (!isSystemHalted)
-            scheduler.addRequest(request);
-    }
-
-    /**
-     *
-     */
-    private void sortRequests() {
-        if (scheduler.sortRequests(currentTravelDirection))
-            executeRequest(scheduler.getAndResetCurrentRequest());
+        scheduler.addRequest(request);
     }
 
     /**
@@ -159,14 +163,39 @@ public class Supervisor implements Runnable {
      * Enable the emergency elevator state. The elevator will remain locked until emergency state removal
      */
     public void enableEmergenry() {
+        if (isSystemHalted) return;
+
+        elevator.halt();
         isSystemHalted = true;
+        currentRequest = null;
         scheduler.clearRequests();
+        panelManager.sendEmergencyMessage();
     }
 
     /**
-     * Disable the emergency elevator state.
+     * Ask to supervisor to disable emergency state
      */
-    public void disableEmergency() {
+    public void requestDisableEmergency() {
+        if (isSystemHalted)
+            requestedDisableEmergency = true;
+    }
+
+    /**
+     * Disable emergency mode
+     */
+    private void disableEmergency() {
+        if (!isSystemHalted) return;
+
+        elevator.reset();
+        panelManager.sendResetMessage();
+        while (elevator.getState() == IElevator.State.RESET) {
+            try {
+                Thread.sleep(Configuration.SUPERVISOR_TICK_TIME);
+            } catch (InterruptedException ignored) {}
+        }
+        panelManager.updateMessage(Movement.IDLE, 0);
+        currentTravelDirection = Movement.IDLE;
+        currentLevel = 0;
         isSystemHalted = false;
     }
 
@@ -184,7 +213,7 @@ public class Supervisor implements Runnable {
 
     private int requestedLevel(Request request) {
         return switch (request.getRequestOrigin()) {
-            case INSIDE, SYSTEM -> request.getTargetLevel();
+            case INSIDE -> request.getTargetLevel();
             case OUTSIDE -> request.getSourceLevel();
         };
     }
