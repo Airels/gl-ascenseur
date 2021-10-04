@@ -7,8 +7,13 @@ import java.awt.*;
 
 public class Rectangle extends JPanel {
 
+    public Rectangle() {
+        super(true);
+    }
+
     @Override
     public void paint(Graphics g) {
+        super.paint(g);
         Dimension dimension = this.getSize();
 
         g.setColor(Color.BLACK);
