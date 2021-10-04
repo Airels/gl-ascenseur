@@ -27,7 +27,7 @@ public interface Scheduler {
     boolean sortRequests(Movement movement);
 
     /**
-     * Getter to retrieve curernt request, and reset boolean if current request changed to false, because current request has been picked up
+     * Getter to retrieve current request, and reset boolean if current request changed to false, because current request has been picked up
      *
      * @return
      */

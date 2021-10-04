@@ -25,6 +25,8 @@ public final class SchedulerBuilder {
      * @return
      */
     public static Scheduler build(SatisfactionStrategy strategy) throws UnhandledStrategyException {
+        System.out.println("Selected strategy: " + strategy.name());
+
         return switch (strategy) {
             case DEFAULT -> new DefaultScheduler();
             case FIFO -> new FIFOScheduler();

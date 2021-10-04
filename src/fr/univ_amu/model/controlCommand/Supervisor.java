@@ -24,7 +24,7 @@ public class Supervisor implements Runnable {
     /**
      *
      */
-    private Movement travelDirection;
+    private Movement currentTravelDirection;
     /**
      *
      */
@@ -59,13 +59,42 @@ public class Supervisor implements Runnable {
         this.isSystemHalted = false;
         this.panelManager = new PanelManager(panel,this);
         this.elevator = elevator;
+        currentLevel = 0;
+        currentTravelDirection = Movement.IDLE;
     }
 
     /**
      * Unit of computation time of Supervisor
      */
     public void tick() {
-        // TODO implement here
+        if (elevator.getAndResetStageSensor()) {
+            currentLevel += (currentTravelDirection == Movement.UP) ? 1 : -1;
+
+            int requestedLevel = requestedLevel();
+            if (requestedLevel == currentLevel) {
+                requestSatisfied();
+                if (scheduler.sortRequests(currentTravelDirection)) {
+                    executeRequest(scheduler.getAndResetCurrentRequest());
+                }
+                else {
+                    currentTravelDirection = Movement.IDLE;
+                    panelManager.updateMessage(currentTravelDirection, currentLevel);
+                }
+            }
+            else if (currentRequest != null && Math.abs(currentLevel - requestedLevel()) == 1)
+                elevator.stopNext();
+
+            panelManager.updateMessage(currentTravelDirection, currentLevel);
+        }
+
+        if (panelManager.isEventAndReset()) {
+            if (scheduler.sortRequests(currentTravelDirection)) {
+                executeRequest(scheduler.getAndResetCurrentRequest());
+            }
+        }
+
+        if (currentRequest != null)
+            executeRequest(currentRequest);
     }
 
     /**
@@ -82,7 +111,7 @@ public class Supervisor implements Runnable {
      *
      */
     private void sortRequests() {
-        if (scheduler.sortRequests(travelDirection))
+        if (scheduler.sortRequests(currentTravelDirection))
             executeRequest(scheduler.getAndResetCurrentRequest());
     }
 
@@ -93,6 +122,37 @@ public class Supervisor implements Runnable {
      */
     private void executeRequest(Request request) {
         currentRequest = request;
+
+        int requestedLevel = requestedLevel();
+        if (elevator.getState() == IElevator.State.STOP) {
+            if (currentLevel - requestedLevel == 0) {
+                elevator.openDoor();
+                requestSatisfied();
+            } else if (currentLevel - requestedLevel > 0) {
+                currentTravelDirection = Movement.DOWN;
+                elevator.down();
+            } else {
+                currentTravelDirection = Movement.UP;
+                elevator.up();
+            }
+
+            if (currentRequest != null && Math.abs(currentLevel - requestedLevel) == 1)
+                elevator.stopNext();
+        } else {
+            if (currentLevel - requestedLevel > 0) {
+                currentTravelDirection = Movement.DOWN;
+            } else {
+                currentTravelDirection = Movement.UP;
+            }
+        }
+
+        panelManager.updateMessage(currentTravelDirection, currentLevel);
+    }
+
+    private void requestSatisfied() {
+        panelManager.requestSatisfied(currentRequest);
+        scheduler.requestSatisfied(currentRequest);
+        currentRequest = null;
     }
 
     /**
@@ -118,9 +178,22 @@ public class Supervisor implements Runnable {
         return isSystemHalted;
     }
 
+    private int requestedLevel() {
+        return requestedLevel(currentRequest);
+    }
+
+    private int requestedLevel(Request request) {
+        return switch (request.getRequestOrigin()) {
+            case INSIDE, SYSTEM -> request.getTargetLevel();
+            case OUTSIDE -> request.getSourceLevel();
+        };
+    }
+
     @Override
     public void run() {
         new Thread(panelManager).start();
+
+        panelManager.updateMessage(Movement.IDLE, 0);
 
         while (!Thread.interrupted()) {
             tick();

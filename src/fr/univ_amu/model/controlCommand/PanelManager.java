@@ -2,9 +2,11 @@ package fr.univ_amu.model.controlCommand;
 
 import elevator.IPanel;
 import fr.univ_amu.model.Direction;
+import fr.univ_amu.model.Movement;
 import fr.univ_amu.model.Request;
 import fr.univ_amu.model.controlCommand.schedulers.Scheduler;
 import fr.univ_amu.utils.Configuration;
+import fr.univ_amu.utils.TextTransformation;
 
 /**
  * Panel manager who will listen to panel interface to catch events and transforms them into Requests independently from Supervisor
@@ -89,6 +91,7 @@ public class PanelManager implements Runnable {
                 if (panel.getAndResetFloorButton(i)) {
                     if (!supervisor.isSystemHalted()) {
                         supervisor.addRequest(new Request(i));
+                        isEventByUser = true;
                         panel.setFloorLight(i, true);
                     }
                 }
@@ -96,6 +99,7 @@ public class PanelManager implements Runnable {
                 if (panel.getAndResetDownButton(i)) {
                     if (!supervisor.isSystemHalted()) {
                         supervisor.addRequest(new Request(Direction.DOWN, i));
+                        isEventByUser = true;
                         panel.setDownLight(i, true);
                     }
                 }
@@ -103,10 +107,44 @@ public class PanelManager implements Runnable {
                 if (panel.getAndResetUpButton(i)) {
                     if (!supervisor.isSystemHalted()) {
                         supervisor.addRequest(new Request(Direction.UP, i));
+                        isEventByUser = true;
                         panel.setUpLight(i, true);
                     }
                 }
             }
         }
+    }
+
+    /**
+     * Allows to switch off buttons who triggered this request
+     * @param request satisfied request
+     */
+    public void requestSatisfied(Request request) {
+        switch (request.getRequestOrigin()) {
+            case INSIDE -> panel.setFloorLight(request.getTargetLevel(), false);
+            case OUTSIDE -> {
+                switch (request.getDirection()) {
+                    case UP -> panel.setUpLight(request.getSourceLevel(), false);
+                    case DOWN -> panel.setDownLight(request.getSourceLevel(), false);
+                }
+            }
+        }
+    }
+
+    /**
+     * Allows to update the internal view elevator to informs user about elevator's state
+     */
+    public void updateMessage(Movement currentMovement, int currentLevel) {
+        StringBuilder stringBuilder = new StringBuilder();
+
+        switch (currentMovement) {
+            case UP -> stringBuilder.append("↑");
+            case DOWN -> stringBuilder.append("↓");
+            case IDLE -> stringBuilder.append("-");
+        };
+
+        stringBuilder.append(TextTransformation.intTwoDigits(currentLevel));
+
+        panel.setMessage(stringBuilder.toString());
     }
 }

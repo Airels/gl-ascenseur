@@ -50,7 +50,7 @@ public class InternalPanelView implements Runnable {
         GridBagConstraints gridConstraints = new GridBagConstraints();
         grid.setLayout(new GridBagLayout());
 
-        visual = new JLabel("- 0 0");
+        visual = new JLabel("INIT");
         visual.setHorizontalAlignment(SwingConstants.CENTER);
         visual.setFont(new Font("Consolas", Font.BOLD, 50));
         visual.setForeground(Color.RED);
@@ -98,32 +98,6 @@ public class InternalPanelView implements Runnable {
     }
 
     /**
-     * Update level shown by internal screen
-     * @param level level to show
-     */
-    public void setLevel(int level) {
-        if (level > MAX_LEVEL) throw new IllegalArgumentException("Given level exceed maximum level");
-
-        String newScreenInfo = visual.getText().toCharArray()[0] + TextTransformation.intTwoDigits(level);
-        visual.setText(newScreenInfo.replace("", " ").trim());
-    }
-
-    /**
-     * Update elevator movement on screen
-     * @param movement movement to show
-     */
-    public void setMovement(Movement movement) {
-        String movementStr = switch (movement) {
-            case UP -> "↑";
-            case IDLE -> "-";
-            case DOWN -> "↓";
-        };
-
-        String newScreenInfo = movementStr + visual.getText().substring(1);
-        visual.setText(newScreenInfo.replace("", " ").trim());
-    }
-
-    /**
      * To light up a button
      *
      * @param id level or MAX_LEVEL+1 for emergency, +2 for reset
@@ -157,7 +131,7 @@ public class InternalPanelView implements Runnable {
                 else
                     switchOffButton(i);
 
-                panelSimulator.getMessage(); // TODO
+                visual.setText(panelSimulator.getMessage().replace("", " ").trim());
             }
             try {
                 Thread.sleep(Configuration.FRAME_RATE_GUI);

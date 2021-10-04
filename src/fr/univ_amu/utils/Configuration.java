@@ -21,7 +21,7 @@ public class Configuration {
     /**
      * Strategy that main elevator control should use to process user requests
      */
-    public static final SatisfactionStrategy REQUEST_SATISTACTION_STRATEGY = SatisfactionStrategy.DEFAULT;
+    public static final SatisfactionStrategy REQUEST_SATISTACTION_STRATEGY = SatisfactionStrategy.FIFO;
 
     /**
      * FPS of the elevator simulation representation

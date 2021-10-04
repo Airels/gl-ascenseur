@@ -103,7 +103,7 @@ public class Request {
         if (targetLevel == -1)
             throw new IllegalStateException("Source level available for INSIDE requests only. Current: OUTSIDE");
 
-        return 0;
+        return targetLevel;
     }
 
     /**
@@ -115,4 +115,19 @@ public class Request {
         return requestCreationTime;
     }
 
+
+    @Override
+    public String toString() {
+        StringBuilder strBuilder = new StringBuilder();
+
+        strBuilder.append("Request {").append("\n")
+                .append("\tOrigin: ").append(requestOrigin).append("\n")
+                .append("\tDirection: ").append(direction).append("\n")
+                .append("\tSource level: ").append(sourceLevel).append("\n")
+                .append("\tTarget level: ").append(targetLevel).append("\n")
+                .append("\tCreation time: ").append(requestCreationTime.getMilliseconds()).append("\n")
+                .append("}");
+
+        return strBuilder.toString();
+    }
 }
