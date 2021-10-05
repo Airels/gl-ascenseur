@@ -16,7 +16,6 @@ import java.util.*;
 public class DefaultScheduler implements Scheduler {
 
     private ArrayDeque<Request> pendingRequests;
-    private Request currentRequest;
 
     /**
      * Default constructor
@@ -38,82 +37,76 @@ public class DefaultScheduler implements Scheduler {
     }
 
     @Override
-    public boolean sortRequests(int currentLevel, Movement movement) {
-        System.out.println("----");
-        if (pendingRequests.isEmpty())
-            return false;
-        else if (pendingRequests.size() == 1) {
-            currentRequest = pendingRequests.peek();
-            return true;
-        }
+    public void sortRequests(int currentLevel, Movement movement) {
+        ArrayDeque<Request> orderedRequests = new ArrayDeque<>();
 
-        Request bestRequest = null;
+        while (!pendingRequests.isEmpty()) {
+            Request bestRequest = null;
 
-        for (Request request : pendingRequests) {
-            if (request.getRequestOrigin() == RequestOrigin.OUTSIDE && Direction.toMovement(request.getDirection()) == movement) {
-                if (bestRequest == null) {
-                    bestRequest = request;
-                } else if (Distance.between(currentLevel, targetLevel(bestRequest)) > Distance.between(currentLevel, targetLevel(request))) {
-                    bestRequest = request;
-                }
-            }
-        }
-
-        for (Request request : pendingRequests) {
-            if (request.getRequestOrigin() == RequestOrigin.INSIDE) {
-                if (movement == Movement.UP) {
-                    if (currentLevel < targetLevel(request)) {
-                        if (bestRequest == null || targetLevel(request) < targetLevel(bestRequest))
-                            bestRequest = request;
-                    }
-                } else {
-                    if (currentLevel > targetLevel(request)) {
-                        if (bestRequest == null || targetLevel(request) > targetLevel(bestRequest))
-                            bestRequest = request;
-                    }
-                }
-            }
-        }
-
-        if (bestRequest == null) {
             for (Request request : pendingRequests) {
-                if (request.getRequestOrigin() == RequestOrigin.OUTSIDE && Direction.toMovement(request.getDirection()) != movement) {
+                if (request.getRequestOrigin() == RequestOrigin.OUTSIDE && Direction.toMovement(request.getDirection()) == movement) {
                     if (bestRequest == null) {
                         bestRequest = request;
+                    } else if (Distance.between(currentLevel, targetLevel(bestRequest)) > Distance.between(currentLevel, targetLevel(request))) {
+                        bestRequest = request;
+                    }
+                }
+            }
+
+            for (Request request : pendingRequests) {
+                if (request.getRequestOrigin() == RequestOrigin.INSIDE) {
+                    if (movement == Movement.UP) {
+                        if (currentLevel < targetLevel(request)) {
+                            if (bestRequest == null || targetLevel(request) < targetLevel(bestRequest))
+                                bestRequest = request;
+                        }
                     } else {
-                        if (movement == Movement.UP) {
-                            if (targetLevel(bestRequest) < targetLevel(request)) {
+                        if (currentLevel > targetLevel(request)) {
+                            if (bestRequest == null || targetLevel(request) > targetLevel(bestRequest))
                                 bestRequest = request;
-                            }
-                        } else if (movement == Movement.DOWN) {
-                            if (targetLevel(bestRequest) > targetLevel(request)) {
-                                bestRequest = request;
+                        }
+                    }
+                }
+            }
+
+            if (bestRequest == null) {
+                for (Request request : pendingRequests) {
+                    if (request.getRequestOrigin() == RequestOrigin.OUTSIDE && Direction.toMovement(request.getDirection()) != movement) {
+                        if (bestRequest == null) {
+                            bestRequest = request;
+                        } else {
+                            if (movement == Movement.UP) {
+                                if (targetLevel(bestRequest) < targetLevel(request)) {
+                                    bestRequest = request;
+                                }
+                            } else if (movement == Movement.DOWN) {
+                                if (targetLevel(bestRequest) > targetLevel(request)) {
+                                    bestRequest = request;
+                                }
                             }
                         }
                     }
                 }
             }
+
+            // ---
+
+            // TODO null = requete interne ?
+            orderedRequests.addLast(bestRequest);
+            pendingRequests.remove(bestRequest);
         }
 
-
-        if (bestRequest != currentRequest) {
-            System.out.println("BEST:");
-            System.out.println(bestRequest);
-            currentRequest = bestRequest;
-            return true;
-        }
-
-        return false;
+        pendingRequests = orderedRequests;
     }
 
     @Override
     public Request getCurrentRequest() {
-        return currentRequest;
+        return pendingRequests.peek();
     }
 
     @Override
-    public void requestSatisfied(Request request) {
-        pendingRequests.remove(request);
+    public void requestSatisfied() {
+        pendingRequests.poll();
     }
 
     @Override

@@ -15,7 +15,6 @@ import java.util.Queue;
 public class FIFOScheduler implements Scheduler {
 
     private ArrayDeque<Request> pendingRequests;
-    private Request currentRequest;
 
     public FIFOScheduler() {
         pendingRequests = new ArrayDeque<>();
@@ -27,28 +26,18 @@ public class FIFOScheduler implements Scheduler {
     }
 
     @Override
-    public boolean sortRequests(int currentLevel, Movement movement) {
-        if (pendingRequests.isEmpty()) {
-            currentRequest = null;
-            return false;
-        }
+    public void sortRequests(int currentLevel, Movement movement) {
 
-        if (currentRequest != pendingRequests.getFirst()) {
-            currentRequest = pendingRequests.getFirst();
-            return true;
-        }
-
-        return false;
     }
 
     @Override
     public Request getCurrentRequest() {
-        return currentRequest;
+        return pendingRequests.peek();
     }
 
     @Override
-    public void requestSatisfied(Request request) {
-        pendingRequests.remove(request);
+    public void requestSatisfied() {
+        pendingRequests.poll();
     }
 
     @Override

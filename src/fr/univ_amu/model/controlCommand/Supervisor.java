@@ -86,7 +86,7 @@ public class Supervisor implements Runnable {
             int requestedLevel = requestedLevel();
             if (requestedLevel == currentLevel) {
                 requestSatisfied();
-                if (scheduler.sortRequests(currentLevel, currentTravelDirection)) {
+                if (scheduler.getCurrentRequest() != null) {
                     executeRequest(scheduler.getCurrentRequest());
                 } else {
                     currentTravelDirection = Movement.IDLE;
@@ -101,9 +101,9 @@ public class Supervisor implements Runnable {
         }
 
         if (panelManager.isEventAndReset()) {
-            if (scheduler.sortRequests(currentLevel, currentTravelDirection)) {
+            scheduler.sortRequests(currentLevel, currentTravelDirection);
+            if (!scheduler.getCurrentRequest().equals(currentRequest))
                 executeRequest(scheduler.getCurrentRequest());
-            }
         }
 
         if (currentRequest != null)
@@ -157,7 +157,7 @@ public class Supervisor implements Runnable {
 
     private void requestSatisfied() {
         panelManager.requestSatisfied(currentRequest);
-        scheduler.requestSatisfied(currentRequest);
+        scheduler.requestSatisfied();
         currentRequest = null;
     }
 
