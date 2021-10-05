@@ -61,37 +61,40 @@ public class DefaultScheduler implements Scheduler {
 
         for (Request request : pendingRequests) {
             if (request.getRequestOrigin() == RequestOrigin.INSIDE) {
-                if (bestRequest == null) {
-                    bestRequest = request;
-                } else if (movement == Movement.UP) {
-                    if (currentLevel < targetLevel(request) && targetLevel(request) < targetLevel(bestRequest) ) {
-                        bestRequest = request;
+                if (movement == Movement.UP) {
+                    if (currentLevel < targetLevel(request)) {
+                        if (bestRequest == null || targetLevel(request) < targetLevel(bestRequest))
+                            bestRequest = request;
                     }
                 } else {
-                    if (currentLevel > targetLevel(request) && targetLevel(request) > targetLevel(bestRequest)) {
-                        bestRequest = request;
+                    if (currentLevel > targetLevel(request)) {
+                        if (bestRequest == null || targetLevel(request) > targetLevel(bestRequest))
+                            bestRequest = request;
                     }
                 }
             }
         }
 
-        for (Request request : pendingRequests) {
-            if (request.getRequestOrigin() == RequestOrigin.OUTSIDE && Direction.toMovement(request.getDirection()) != movement) {
-                if (bestRequest == null) {
-                    bestRequest = request;
-                } else {
-                    if (movement == Movement.UP) {
-                        if (targetLevel(bestRequest) < targetLevel(request)) {
-                            bestRequest = request;
-                        }
-                    } else if (movement == Movement.DOWN) {
-                        if (targetLevel(bestRequest) > targetLevel(request)) {
-                            bestRequest = request;
+        if (bestRequest == null) {
+            for (Request request : pendingRequests) {
+                if (request.getRequestOrigin() == RequestOrigin.OUTSIDE && Direction.toMovement(request.getDirection()) != movement) {
+                    if (bestRequest == null) {
+                        bestRequest = request;
+                    } else {
+                        if (movement == Movement.UP) {
+                            if (targetLevel(bestRequest) < targetLevel(request)) {
+                                bestRequest = request;
+                            }
+                        } else if (movement == Movement.DOWN) {
+                            if (targetLevel(bestRequest) > targetLevel(request)) {
+                                bestRequest = request;
+                            }
                         }
                     }
                 }
             }
         }
+
 
         if (bestRequest != currentRequest) {
             System.out.println("BEST:");
