@@ -14,11 +14,6 @@ public class Configuration {
     public static final int MAX_LEVEL = 11;
 
     /**
-     * Idle time (in seconds) between two requests
-     */
-    public static final int IDLE_DELAY = 5;
-
-    /**
      * Strategy that main elevator control should use to process user requests
      */
     public static final SatisfactionStrategy REQUEST_SATISTACTION_STRATEGY = SatisfactionStrategy.DEFAULT;
