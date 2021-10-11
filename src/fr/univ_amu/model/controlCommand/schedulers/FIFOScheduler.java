@@ -47,8 +47,15 @@ public class FIFOScheduler implements Scheduler {
     }
 
     @Override
-    public void requestSatisfied(Request request) {
-        pendingRequests.remove(request);
+    public void requestSatisfied(int level) {
+        ArrayDeque<Request> newRequests = new ArrayDeque<>();
+
+        for (Request r : pendingRequests) {
+            if (r.getTargetLevel() != level)
+                newRequests.push(r);
+        }
+
+        pendingRequests = newRequests;
     }
 
     @Override

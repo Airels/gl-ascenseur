@@ -116,19 +116,13 @@ public class PanelManager implements Runnable {
     }
 
     /**
-     * Allows to switch off buttons who triggered this request
-     * @param request satisfied request
+     * Allows to switch off buttons of a certain level
+     * @param level level to switch off
      */
-    public void requestSatisfied(Request request) {
-        switch (request.getRequestOrigin()) {
-            case INSIDE -> panel.setFloorLight(request.getTargetLevel(), false);
-            case OUTSIDE -> {
-                switch (request.getDirection()) {
-                    case UP -> panel.setUpLight(request.getSourceLevel(), false);
-                    case DOWN -> panel.setDownLight(request.getSourceLevel(), false);
-                }
-            }
-        }
+    public void levelSatisfied(int level) {
+        panel.setFloorLight(level, false);
+        panel.setUpLight(level, false);
+        panel.setDownLight(level, false);
     }
 
     /**

@@ -112,8 +112,15 @@ public class DefaultScheduler implements Scheduler {
     }
 
     @Override
-    public void requestSatisfied(Request request) {
-        pendingRequests.remove(request);
+    public void requestSatisfied(int level) {
+        ArrayDeque<Request> newRequests = new ArrayDeque<>();
+
+        for (Request r : pendingRequests) {
+            if (r.getTargetLevel() != level)
+                newRequests.push(r);
+        }
+
+        pendingRequests = newRequests;
     }
 
     @Override
@@ -122,9 +129,6 @@ public class DefaultScheduler implements Scheduler {
     }
 
     private int targetLevel(Request request) {
-        return switch (request.getRequestOrigin()) {
-            case INSIDE -> request.getTargetLevel();
-            case OUTSIDE -> request.getSourceLevel();
-        };
+        return request.getTargetLevel();
     }
 }

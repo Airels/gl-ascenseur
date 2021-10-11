@@ -37,7 +37,7 @@ public interface Scheduler {
     /**
      * @param request
      */
-    void requestSatisfied(Request request);
+    void requestSatisfied(int level);
 
     /**
      * Clear all pending requests

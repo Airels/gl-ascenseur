@@ -156,8 +156,8 @@ public class Supervisor implements Runnable {
     }
 
     private void requestSatisfied() {
-        panelManager.requestSatisfied(currentRequest);
-        scheduler.requestSatisfied(currentRequest);
+        panelManager.levelSatisfied(currentRequest.getTargetLevel());
+        scheduler.requestSatisfied(currentRequest.getTargetLevel());
         currentRequest = null;
     }
 
@@ -214,10 +214,7 @@ public class Supervisor implements Runnable {
     }
 
     private int requestedLevel(Request request) {
-        return switch (request.getRequestOrigin()) {
-            case INSIDE -> request.getTargetLevel();
-            case OUTSIDE -> request.getSourceLevel();
-        };
+        return request.getTargetLevel();
     }
 
     /**

@@ -16,10 +16,6 @@ public class Request {
      */
     private Direction direction;
     /**
-     * Source request level (outside panel)
-     */
-    private int sourceLevel;
-    /**
      * Level targeted by user (inside panel)
      */
     private int targetLevel;
@@ -31,10 +27,9 @@ public class Request {
     /**
      * Default constructor
      */
-    private Request(RequestOrigin requestOrigin, Direction direction, int sourceLevel, int targetLevel) {
+    private Request(RequestOrigin requestOrigin, Direction direction, int targetLevel) {
         this.requestOrigin = requestOrigin;
         this.direction = direction;
-        this.sourceLevel = sourceLevel;
         this.targetLevel = targetLevel;
         this.requestCreationTime = new Timestamp();
     }
@@ -43,14 +38,14 @@ public class Request {
      * Constructor for inside the elevator's requests
      */
     public Request(int sourceLevel, int targetLevel) {
-        this(RequestOrigin.INSIDE, null, sourceLevel, targetLevel);
+        this(RequestOrigin.INSIDE, null, targetLevel);
     }
 
     /**
      * Constructor for outside the elevator's requests
      */
-    public Request(Direction direction, int sourceLevel) {
-        this(RequestOrigin.OUTSIDE, direction, sourceLevel, -1);
+    public Request(Direction direction, int targetLevel) {
+        this(RequestOrigin.OUTSIDE, direction, targetLevel);
     }
 
     /**
@@ -68,19 +63,10 @@ public class Request {
      * @return
      */
     public Direction getDirection() {
-        if (sourceLevel == -1)
-            throw new IllegalStateException("Target level available for OUTSIDE requests only. Current: INSIDE");
+        if (direction == null)
+            throw new IllegalStateException("Direction available for OUTSIDE requests only. Current: " + getRequestOrigin());
 
         return direction;
-    }
-
-    /**
-     * Source level of request
-     *
-     * @return
-     */
-    public int getSourceLevel() {
-        return sourceLevel;
     }
 
     /**
@@ -89,9 +75,6 @@ public class Request {
      * @return
      */
     public int getTargetLevel() {
-        if (sourceLevel == -1)
-            throw new IllegalStateException("Target level available for INSIDE requests only. Current: OUTSIDE");
-
         return targetLevel;
     }
 
@@ -112,7 +95,6 @@ public class Request {
         strBuilder.append("Request {").append("")
                 .append("Origin: ").append(requestOrigin).append(", ")
                 .append("Direction: ").append(direction).append(", ")
-                .append("Source level: ").append(sourceLevel).append(", ")
                 .append("Target level: ").append(targetLevel).append(", ")
                 .append("Creation time: ").append(requestCreationTime.getMilliseconds())
                 .append("}");
