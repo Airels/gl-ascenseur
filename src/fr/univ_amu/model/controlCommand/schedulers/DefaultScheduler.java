@@ -16,7 +16,6 @@ import java.util.*;
 public class DefaultScheduler implements Scheduler {
 
     private ArrayDeque<Request> pendingRequests;
-    private Request currentRequest;
 
     /**
      * Default constructor
@@ -27,108 +26,98 @@ public class DefaultScheduler implements Scheduler {
 
     @Override
     public void addRequest(Request request) {
-        if (request.getRequestOrigin() == RequestOrigin.OUTSIDE)
-            pendingRequests.offer(request);
-        else {
-            Request current = pendingRequests.pollLast();
-            pendingRequests.add(request);
-            if (current != null)
-                pendingRequests.add(current);
-        }
+        pendingRequests.add(request);
     }
 
     @Override
-    public boolean sortRequests(int currentLevel, Movement movement) {
+    public void sortRequests(int currentLevel, Movement currentMovement) {
         System.out.println("----");
-        if (pendingRequests.isEmpty())
-            return false;
-        else if (pendingRequests.size() == 1) {
-            currentRequest = pendingRequests.peek();
-            return true;
-        }
+        System.out.println("CURRENT(" + currentLevel + ")(" + currentMovement + ")");
 
-        Request bestRequest = null;
+        if (pendingRequests.size() == 1)
+            return;
 
-        for (Request request : pendingRequests) {
-            if (request.getRequestOrigin() == RequestOrigin.OUTSIDE && Direction.toMovement(request.getDirection()) == movement) {
-                if (bestRequest == null) {
-                    bestRequest = request;
-                } else if (Distance.between(currentLevel, targetLevel(bestRequest)) > Distance.between(currentLevel, targetLevel(request))) {
-                    bestRequest = request;
-                }
-            }
-        }
+        List<Request> firstRequests = new ArrayList<>();
+        List<Request> requests = new ArrayList<>();
+        List<Request> oppositeRequests = new ArrayList<>();
+        List<Request> lastRequests = new ArrayList<>();
 
         for (Request request : pendingRequests) {
-            if (request.getRequestOrigin() == RequestOrigin.INSIDE) {
-                if (movement == Movement.UP) {
-                    if (currentLevel < targetLevel(request)) {
-                        if (bestRequest == null || targetLevel(request) < targetLevel(bestRequest))
-                            bestRequest = request;
-                    }
-                } else {
-                    if (currentLevel > targetLevel(request)) {
-                        if (bestRequest == null || targetLevel(request) > targetLevel(bestRequest))
-                            bestRequest = request;
-                    }
-                }
+            if (request.getTargetLevel() == currentLevel) {
+                firstRequests.add(request);
+            } else if (currentMovement == Movement.DOWN) {
+                if (request.getRequestOrigin() == RequestOrigin.OUTSIDE && Direction.toMovement(request.getDirection()) != currentMovement)
+                    oppositeRequests.add(request);
+                if (request.getTargetLevel() < currentLevel)
+                    requests.add(request);
+                else if (request.getRequestOrigin() == RequestOrigin.INSIDE)
+                    oppositeRequests.add(request);
+                else
+                    lastRequests.add(request);
+            } else {
+                if (request.getRequestOrigin() == RequestOrigin.OUTSIDE && Direction.toMovement(request.getDirection()) != currentMovement)
+                    oppositeRequests.add(request);
+                else if (request.getTargetLevel() > currentLevel)
+                    requests.add(request);
+                else if (request.getRequestOrigin() == RequestOrigin.INSIDE)
+                    oppositeRequests.add(request);
+                else
+                    lastRequests.add(request);
             }
         }
 
-        if (bestRequest == null) {
-            for (Request request : pendingRequests) {
-                if (request.getRequestOrigin() == RequestOrigin.OUTSIDE && Direction.toMovement(request.getDirection()) != movement) {
-                    if (bestRequest == null) {
-                        bestRequest = request;
-                    } else {
-                        if (movement == Movement.UP) {
-                            if (targetLevel(bestRequest) < targetLevel(request)) {
-                                bestRequest = request;
-                            }
-                        } else if (movement == Movement.DOWN) {
-                            if (targetLevel(bestRequest) > targetLevel(request)) {
-                                bestRequest = request;
-                            }
-                        }
-                    }
-                }
-            }
-        }
+        Collections.sort(requests);
+        if (currentMovement == Movement.UP)
+            Collections.reverse(requests);
+
+        Collections.sort(oppositeRequests);
+        if (currentMovement == Movement.DOWN)
+            Collections.reverse(requests);
+
+        Collections.sort(lastRequests);
+        if (currentMovement == Movement.UP)
+            Collections.reverse(lastRequests);
 
 
-        if (bestRequest != currentRequest) {
-            System.out.println("BEST:");
-            System.out.println(bestRequest);
-            currentRequest = bestRequest;
-            return true;
-        }
+        for (Request r: firstRequests)
+            System.out.println("1: " + r);
+        for (Request r : requests)
+            System.out.println("2: " + r);
+        for (Request r : oppositeRequests)
+            System.out.println("3: " + r);
+        for (Request r : lastRequests)
+            System.out.println("4: " + r);
 
-        return false;
+        pendingRequests.clear();
+        pendingRequests.addAll(firstRequests);
+        pendingRequests.addAll(requests);
+        pendingRequests.addAll(oppositeRequests);
+        pendingRequests.addAll(lastRequests);
     }
 
     @Override
     public Request getCurrentRequest() {
-        return currentRequest;
+        return pendingRequests.peek();
     }
 
     @Override
-    public void requestSatisfied(int level) {
-        ArrayDeque<Request> newRequests = new ArrayDeque<>();
+    public void requestSatisfied() {
+        if (pendingRequests.isEmpty()) return;
 
-        for (Request r : pendingRequests) {
-            if (r.getTargetLevel() != level)
-                newRequests.push(r);
+        Request removedRequest = pendingRequests.pollFirst();
+        List<Request> requestsToRemove = new ArrayList<>();
+
+        for (Request request : pendingRequests) {
+            if (request.getTargetLevel() == removedRequest.getTargetLevel())
+                requestsToRemove.add(request);
         }
 
-        pendingRequests = newRequests;
+        for (Request request : requestsToRemove)
+            pendingRequests.remove(request);
     }
 
     @Override
     public void clearRequests() {
         pendingRequests.clear();
-    }
-
-    private int targetLevel(Request request) {
-        return request.getTargetLevel();
     }
 }

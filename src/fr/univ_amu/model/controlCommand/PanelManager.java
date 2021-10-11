@@ -36,9 +36,9 @@ public class PanelManager implements Runnable {
     }
 
     /**
-     * Called by the Supervisor, return a boolean to tell if at least an action was caught and reset it
+     * Return a boolean to tell if at least an action was caught and reset its value
      *
-     * @return
+     * @return true if event is caught, false otherwise
      */
     public boolean isEventAndReset() {
         if (isEventByUser) {
@@ -116,13 +116,13 @@ public class PanelManager implements Runnable {
     }
 
     /**
-     * Allows to switch off buttons of a certain level
-     * @param level level to switch off
+     * Allows switch off buttons of a target floor
+     * @param level floor to switch off
      */
     public void levelSatisfied(int level) {
         panel.setFloorLight(level, false);
-        panel.setUpLight(level, false);
         panel.setDownLight(level, false);
+        panel.setUpLight(level, false);
     }
 
     /**

@@ -5,7 +5,7 @@ package fr.univ_amu.model;
  *
  * @author VIZCAINO Yohan
  */
-public class Request {
+public class Request implements Comparable<Request> {
 
     /**
      *
@@ -100,5 +100,10 @@ public class Request {
                 .append("}");
 
         return strBuilder.toString();
+    }
+
+    @Override
+    public int compareTo(Request r) {
+        return r.getTargetLevel() - this.getTargetLevel();
     }
 }

@@ -27,18 +27,14 @@ public class FIFOScheduler implements Scheduler {
     }
 
     @Override
-    public boolean sortRequests(int currentLevel, Movement movement) {
+    public void sortRequests(int currentLevel, Movement movement) {
         if (pendingRequests.isEmpty()) {
             currentRequest = null;
-            return false;
         }
 
         if (currentRequest != pendingRequests.getFirst()) {
             currentRequest = pendingRequests.getFirst();
-            return true;
         }
-
-        return false;
     }
 
     @Override
@@ -47,15 +43,8 @@ public class FIFOScheduler implements Scheduler {
     }
 
     @Override
-    public void requestSatisfied(int level) {
-        ArrayDeque<Request> newRequests = new ArrayDeque<>();
-
-        for (Request r : pendingRequests) {
-            if (r.getTargetLevel() != level)
-                newRequests.push(r);
-        }
-
-        pendingRequests = newRequests;
+    public void requestSatisfied() {
+        pendingRequests.remove();
     }
 
     @Override

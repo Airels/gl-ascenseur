@@ -24,7 +24,7 @@ public class Supervisor implements Runnable {
     /**
      *
      */
-    private Movement currentTravelDirection;
+    private Movement currentMovement;
     /**
      *
      */
@@ -40,11 +40,11 @@ public class Supervisor implements Runnable {
     /**
      *
      */
-    private PanelManager panelManager;
+    private final PanelManager panelManager;
     /**
      *
      */
-    private IElevator elevator;
+    private final IElevator elevator;
 
     private boolean requestedDisableEmergency;
 
@@ -62,7 +62,7 @@ public class Supervisor implements Runnable {
         this.panelManager = new PanelManager(panel,this);
         this.elevator = elevator;
         currentLevel = 0;
-        currentTravelDirection = Movement.IDLE;
+        currentMovement = Movement.IDLE;
         requestedDisableEmergency = false;
     }
 
@@ -81,83 +81,71 @@ public class Supervisor implements Runnable {
                 return;
             }
 
-            currentLevel += (currentTravelDirection == Movement.UP) ? 1 : -1;
+            currentLevel += (currentMovement == Movement.UP) ? 1 : -1;
 
-            int requestedLevel = requestedLevel();
-            if (requestedLevel == currentLevel) {
+            if (currentRequest.getTargetLevel() == currentLevel) {
                 requestSatisfied();
-                if (scheduler.sortRequests(currentLevel, currentTravelDirection)) {
+                if (scheduler.getCurrentRequest() == null) {
+                    currentMovement = Movement.IDLE;
+                    panelManager.updateMessage(currentMovement, currentLevel);
+                } else
                     executeRequest(scheduler.getCurrentRequest());
-                } else {
-                    currentTravelDirection = Movement.IDLE;
-                    panelManager.updateMessage(currentTravelDirection, currentLevel);
-                }
             }
-            else if (currentRequest != null && Math.abs(currentLevel - requestedLevel()) == 1) {
-                elevator.stopNext();
-            }
-
-            panelManager.updateMessage(currentTravelDirection, currentLevel);
         }
 
         if (panelManager.isEventAndReset()) {
-            if (scheduler.sortRequests(currentLevel, currentTravelDirection)) {
+            if (scheduler.getCurrentRequest() != null)
                 executeRequest(scheduler.getCurrentRequest());
-            }
         }
 
-        if (currentRequest != null)
+        if (currentRequest != null && elevator.getState() == IElevator.State.STOP)
             executeRequest(currentRequest);
+
+        if (elevator.getState() == IElevator.State.UP || elevator.getState() == IElevator.State.DOWN) {
+            if (Math.abs(currentLevel - currentRequest.getTargetLevel()) == 1)
+                elevator.stopNext();
+        }
+
+        panelManager.updateMessage(currentMovement, currentLevel);
     }
 
     /**
      * Add request to the queue (do not guarantee its execution)
      *
-     * @param request
+     * @param request request to add
      */
     public void addRequest(Request request) {
         scheduler.addRequest(request);
+        scheduler.sortRequests(currentLevel, currentMovement);
+        // System.out.println("\tBEST: " + scheduler.getCurrentRequest());
     }
 
     /**
      * Define a request to be executed
      *
-     * @param request
+     * @param request request to execute
      */
     private void executeRequest(Request request) {
         currentRequest = request;
 
-        int requestedLevel = requestedLevel();
-        if (elevator.getState() == IElevator.State.STOP) {
-            if (currentLevel - requestedLevel == 0) {
-                elevator.openDoor();
-                requestSatisfied();
-            } else if (currentLevel - requestedLevel > 0) {
-                currentTravelDirection = Movement.DOWN;
-                elevator.down();
-            } else {
-                currentTravelDirection = Movement.UP;
-                elevator.up();
+        int requestedLevel = currentRequest.getTargetLevel();
+        if (currentLevel - requestedLevel == 0) {
+            switch (elevator.getState()) {
+                case STOP:
+                    elevator.openDoor();
+                case DOOR:
+                    requestSatisfied();
             }
+        } else if (currentLevel - requestedLevel > 0) {
+            sendMovementCommand(Movement.DOWN);
         } else {
-            if (currentLevel - requestedLevel > 0) {
-                currentTravelDirection = Movement.DOWN;
-            } else {
-                currentTravelDirection = Movement.UP;
-            }
+            sendMovementCommand(Movement.UP);
         }
-
-        if (elevator.getState() == IElevator.State.UP || elevator.getState() == IElevator.State.DOWN) {
-            if (currentRequest != null && Math.abs(currentLevel - requestedLevel) == 1)
-                elevator.stopNext();
-        }
-
-        panelManager.updateMessage(currentTravelDirection, currentLevel);
     }
 
     private void requestSatisfied() {
         panelManager.levelSatisfied(currentRequest.getTargetLevel());
-        scheduler.requestSatisfied(currentRequest.getTargetLevel());
+        scheduler.requestSatisfied();
         currentRequest = null;
     }
 
@@ -196,7 +184,7 @@ public class Supervisor implements Runnable {
             } catch (InterruptedException ignored) {}
         }
         panelManager.updateMessage(Movement.IDLE, 0);
-        currentTravelDirection = Movement.IDLE;
+        currentMovement = Movement.IDLE;
         currentLevel = 0;
         isSystemHalted = false;
     }
@@ -207,10 +195,6 @@ public class Supervisor implements Runnable {
      */
     public boolean isSystemHalted() {
         return isSystemHalted;
-    }
-
-    private int requestedLevel() {
-        return requestedLevel(currentRequest);
     }
 
     private int requestedLevel(Request request) {
@@ -236,6 +220,21 @@ public class Supervisor implements Runnable {
             try {
                 Thread.sleep(Configuration.SUPERVISOR_TICK_TIME);
             } catch (InterruptedException ignored) {}
+        }
+    }
+
+    /**
+     * Send movement to elevator's engine and update current state
+     * @param movement movement to choose
+     */
+    public void sendMovementCommand(Movement movement) {
+        currentMovement = movement;
+
+        if (elevator.getState() == IElevator.State.STOP) {
+            switch (movement) {
+                case UP -> elevator.up();
+                case DOWN -> elevator.down();
+            }
         }
     }
 }
