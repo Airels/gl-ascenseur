@@ -90,25 +90,25 @@ public class PanelManager implements Runnable {
             for (int i = 0; i <= Configuration.MAX_LEVEL; i++) {
                 if (panel.getAndResetFloorButton(i)) {
                     if (!supervisor.isSystemHalted()) {
-                        supervisor.addRequest(new Request(supervisor.getCurrentLevel(), i));
-                        isEventByUser = true;
-                        panel.setFloorLight(i, true);
+                        isEventByUser = supervisor.addRequest(new Request(supervisor.getCurrentLevel(), i));
+                        if (isEventByUser)
+                            panel.setFloorLight(i, true);
                     }
                 }
 
                 if (panel.getAndResetDownButton(i)) {
                     if (!supervisor.isSystemHalted()) {
-                        supervisor.addRequest(new Request(Direction.DOWN, i));
-                        isEventByUser = true;
-                        panel.setDownLight(i, true);
+                        isEventByUser = supervisor.addRequest(new Request(Direction.DOWN, i));
+                        if (isEventByUser)
+                            panel.setDownLight(i, true);
                     }
                 }
 
                 if (panel.getAndResetUpButton(i)) {
                     if (!supervisor.isSystemHalted()) {
-                        supervisor.addRequest(new Request(Direction.UP, i));
-                        isEventByUser = true;
-                        panel.setUpLight(i, true);
+                        isEventByUser = supervisor.addRequest(new Request(Direction.UP, i));
+                        if (isEventByUser)
+                            panel.setUpLight(i, true);
                     }
                 }
             }
@@ -135,7 +135,7 @@ public class PanelManager implements Runnable {
             case UP -> stringBuilder.append("↑");
             case DOWN -> stringBuilder.append("↓");
             case IDLE -> stringBuilder.append("-");
-        };
+        }
 
         stringBuilder.append(TextTransformation.intTwoDigits(currentLevel));
 

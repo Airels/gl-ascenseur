@@ -37,15 +37,12 @@ public class DefaultScheduler implements Scheduler {
         if (pendingRequests.size() == 1)
             return;
 
-        List<Request> firstRequests = new ArrayList<>();
         List<Request> requests = new ArrayList<>();
         List<Request> oppositeRequests = new ArrayList<>();
         List<Request> lastRequests = new ArrayList<>();
 
         for (Request request : pendingRequests) {
-            if (request.getTargetLevel() == currentLevel) {
-                firstRequests.add(request);
-            } else if (currentMovement == Movement.DOWN) {
+            if (currentMovement == Movement.DOWN) {
                 if (request.getRequestOrigin() == RequestOrigin.OUTSIDE && Direction.toMovement(request.getDirection()) != currentMovement)
                     oppositeRequests.add(request);
                 if (request.getTargetLevel() < currentLevel)
@@ -72,15 +69,12 @@ public class DefaultScheduler implements Scheduler {
 
         Collections.sort(oppositeRequests);
         if (currentMovement == Movement.DOWN)
-            Collections.reverse(requests);
+            Collections.reverse(oppositeRequests);
 
         Collections.sort(lastRequests);
         if (currentMovement == Movement.UP)
             Collections.reverse(lastRequests);
 
-
-        for (Request r: firstRequests)
-            System.out.println("1: " + r);
         for (Request r : requests)
             System.out.println("2: " + r);
         for (Request r : oppositeRequests)
@@ -89,7 +83,6 @@ public class DefaultScheduler implements Scheduler {
             System.out.println("4: " + r);
 
         pendingRequests.clear();
-        pendingRequests.addAll(firstRequests);
         pendingRequests.addAll(requests);
         pendingRequests.addAll(oppositeRequests);
         pendingRequests.addAll(lastRequests);

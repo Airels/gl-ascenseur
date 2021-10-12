@@ -98,6 +98,9 @@ public class Supervisor implements Runnable {
                 executeRequest(scheduler.getCurrentRequest());
         }
 
+        if (currentRequest == null && scheduler.getCurrentRequest() != null)
+            executeRequest(scheduler.getCurrentRequest());
+
         if (currentRequest != null && elevator.getState() == IElevator.State.STOP)
             executeRequest(currentRequest);
 
@@ -110,14 +113,21 @@ public class Supervisor implements Runnable {
     }
 
     /**
-     * Add request to the queue (do not guarantee its execution)
+     * Add request to the queue (do not guarantee its execution), and returns if it was added
      *
      * @param request request to add
+     * @return if request was added
      */
-    public void addRequest(Request request) {
+    public boolean addRequest(Request request) {
+        if (request.getTargetLevel() == currentLevel) {
+            if (elevator.getState() == IElevator.State.STOP)
+                elevator.openDoor();
+            return false;
+        }
+
         scheduler.addRequest(request);
         scheduler.sortRequests(currentLevel, currentMovement);
-        // System.out.println("\tBEST: " + scheduler.getCurrentRequest());
+        return true;
     }
 
     /**

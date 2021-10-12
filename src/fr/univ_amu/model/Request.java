@@ -49,9 +49,10 @@ public class Request implements Comparable<Request> {
     }
 
     /**
-     * Origin of the request (if is inside or outside of the elevator)
+     * Origin of the request (if is inside or outside the elevator)
      *
-     * @return
+     * @return Origin of the request
+     * @see RequestOrigin to see all returned values
      */
     public RequestOrigin getRequestOrigin() {
         return requestOrigin;
@@ -60,7 +61,8 @@ public class Request implements Comparable<Request> {
     /**
      * Desired direction of the request (UP or DOWN), only for outside requests
      *
-     * @return
+     * @return Direction of the request
+     * @see Direction for all allowed directions
      */
     public Direction getDirection() {
         if (direction == null)
@@ -72,7 +74,7 @@ public class Request implements Comparable<Request> {
     /**
      * Target level or request
      *
-     * @return
+     * @return integer of the destination to reach
      */
     public int getTargetLevel() {
         return targetLevel;
@@ -81,7 +83,7 @@ public class Request implements Comparable<Request> {
     /**
      * Gives timestamp when request was created
      *
-     * @return
+     * @return Timestamp when created
      */
     public Timestamp getCreationTime() {
         return requestCreationTime;
@@ -90,16 +92,12 @@ public class Request implements Comparable<Request> {
 
     @Override
     public String toString() {
-        StringBuilder strBuilder = new StringBuilder();
-
-        strBuilder.append("Request {").append("")
-                .append("Origin: ").append(requestOrigin).append(", ")
-                .append("Direction: ").append(direction).append(", ")
-                .append("Target level: ").append(targetLevel).append(", ")
-                .append("Creation time: ").append(requestCreationTime.getMilliseconds())
-                .append("}");
-
-        return strBuilder.toString();
+        return "Request {" +
+                "Origin: " + requestOrigin + ", " +
+                "Direction: " + direction + ", " +
+                "Target level: " + targetLevel + ", " +
+                "Creation time: " + requestCreationTime.getMilliseconds() +
+                "}";
     }
 
     @Override
