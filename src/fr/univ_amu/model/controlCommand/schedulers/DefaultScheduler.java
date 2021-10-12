@@ -4,13 +4,16 @@ import fr.univ_amu.model.Direction;
 import fr.univ_amu.model.Movement;
 import fr.univ_amu.model.Request;
 import fr.univ_amu.model.RequestOrigin;
-import fr.univ_amu.utils.Distance;
 
-import java.util.*;
+import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Default scheduler as described by default satisfaction strategy
  * #see SatisfactionStrategy
+ *
  * @author VIZCAINO Yohan
  */
 public class DefaultScheduler implements Scheduler {

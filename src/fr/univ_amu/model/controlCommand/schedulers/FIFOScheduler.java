@@ -4,13 +4,12 @@ import fr.univ_amu.model.Movement;
 import fr.univ_amu.model.Request;
 
 import java.util.ArrayDeque;
-import java.util.Queue;
 
 /**
  * FIFO scheduler as described by default satisfaction strategy
- * #see SatisfactionStrategy
  *
  * @author VIZCAINO Yohan
+ * @see fr.univ_amu.utils.SatisfactionStrategy to see all satisfation strategy supported
  */
 public class FIFOScheduler implements Scheduler {
 

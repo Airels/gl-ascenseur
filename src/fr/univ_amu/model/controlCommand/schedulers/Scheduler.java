@@ -6,6 +6,8 @@ import fr.univ_amu.utils.SatisfactionStrategy;
 
 /**
  * Representation of the scheduler, or the "thinker" of the control command duo
+ *
+ * @author VIZCAINO YOhan
  */
 public interface Scheduler {
 
@@ -21,7 +23,7 @@ public interface Scheduler {
      * Sort pending requests, conditions are set up by chosen satisfaction strategy
      *
      * @param currentLevel current level of the elevator
-     * @param movement current movement of the elevator
+     * @param movement     current movement of the elevator
      * @see SatisfactionStrategy
      */
     void sortRequests(int currentLevel, Movement movement);

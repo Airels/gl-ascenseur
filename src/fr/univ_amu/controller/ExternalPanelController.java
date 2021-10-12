@@ -9,6 +9,7 @@ import java.awt.event.ActionListener;
 /**
  * Controller of GUI.
  * Handle buttons events when clicked on internal panel
+ *
  * @author VIZCAINO Yohan
  */
 public class ExternalPanelController implements ActionListener {
@@ -17,6 +18,13 @@ public class ExternalPanelController implements ActionListener {
     private Direction direction;
     private IPanelSimulator panelSimulator;
 
+    /**
+     * Default constructor
+     *
+     * @param panelSimulator inside and outside panel simulation
+     * @param level          panel level to handle
+     * @param direction      direction of the button
+     */
     public ExternalPanelController(IPanelSimulator panelSimulator, int level, Direction direction) {
         this.level = level;
         this.direction = direction;

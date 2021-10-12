@@ -20,6 +20,14 @@ public class Supervisor implements Runnable {
     /**
      *
      */
+    private final PanelManager panelManager;
+    /**
+     *
+     */
+    private final IElevator elevator;
+    /**
+     *
+     */
     private int currentLevel;
     /**
      *
@@ -37,15 +45,6 @@ public class Supervisor implements Runnable {
      *
      */
     private Scheduler scheduler;
-    /**
-     *
-     */
-    private final PanelManager panelManager;
-    /**
-     *
-     */
-    private final IElevator elevator;
-
     private boolean requestedDisableEmergency;
 
     /**
@@ -53,13 +52,13 @@ public class Supervisor implements Runnable {
      */
     public Supervisor(IPanel panel, IElevator elevator) {
         try {
-            scheduler = SchedulerBuilder.build(Configuration.REQUEST_SATISTACTION_STRATEGY);
+            scheduler = SchedulerBuilder.build(Configuration.REQUEST_SATISFACTIONS_STRATEGY);
         } catch (UnhandledStrategyException e) {
             ExceptionHandler.showAndExit(e);
         }
 
         this.isSystemHalted = false;
-        this.panelManager = new PanelManager(panel,this);
+        this.panelManager = new PanelManager(panel, this);
         this.elevator = elevator;
         currentLevel = 0;
         currentMovement = Movement.IDLE;
@@ -75,28 +74,11 @@ public class Supervisor implements Runnable {
 
         if (isSystemHalted) return;
 
-        if (elevator.getAndResetStageSensor()) {
-            if (requestedDisableEmergency) {
-                requestedDisableEmergency = false;
-                return;
-            }
+        if (elevator.getAndResetStageSensor())
+            handleStageSensorEvent();
 
-            currentLevel += (currentMovement == Movement.UP) ? 1 : -1;
-
-            if (currentRequest.getTargetLevel() == currentLevel) {
-                requestSatisfied();
-                if (scheduler.getCurrentRequest() == null) {
-                    currentMovement = Movement.IDLE;
-                    panelManager.updateMessage(currentMovement, currentLevel);
-                } else
-                    executeRequest(scheduler.getCurrentRequest());
-            }
-        }
-
-        if (panelManager.isEventAndReset()) {
-            if (scheduler.getCurrentRequest() != null)
-                executeRequest(scheduler.getCurrentRequest());
-        }
+        if (panelManager.isEventAndReset() && scheduler.getCurrentRequest() != null)
+            executeRequest(scheduler.getCurrentRequest());
 
         if (currentRequest == null && scheduler.getCurrentRequest() != null)
             executeRequest(scheduler.getCurrentRequest());
@@ -104,12 +86,32 @@ public class Supervisor implements Runnable {
         if (currentRequest != null && elevator.getState() == IElevator.State.STOP)
             executeRequest(currentRequest);
 
-        if (elevator.getState() == IElevator.State.UP || elevator.getState() == IElevator.State.DOWN) {
-            if (Math.abs(currentLevel - currentRequest.getTargetLevel()) == 1)
-                elevator.stopNext();
+        if ((elevator.getState() == IElevator.State.UP || elevator.getState() == IElevator.State.DOWN)
+                && Math.abs(currentLevel - currentRequest.getTargetLevel()) == 1) {
+            elevator.stopNext();
         }
 
         panelManager.updateMessage(currentMovement, currentLevel);
+    }
+
+    /**
+     * Handle an event level sensor
+     */
+    private void handleStageSensorEvent() {
+        if (requestedDisableEmergency) {
+            requestedDisableEmergency = false;
+        }
+
+        currentLevel += (currentMovement == Movement.UP) ? 1 : -1;
+
+        if (currentRequest.getTargetLevel() == currentLevel) {
+            requestSatisfied();
+            if (scheduler.getCurrentRequest() == null) {
+                currentMovement = Movement.IDLE;
+                panelManager.updateMessage(currentMovement, currentLevel);
+            } else
+                executeRequest(scheduler.getCurrentRequest());
+        }
     }
 
     /**
@@ -119,14 +121,15 @@ public class Supervisor implements Runnable {
      * @return if request was added
      */
     public boolean addRequest(Request request) {
-        if (request.getTargetLevel() == currentLevel) {
-            if (elevator.getState() == IElevator.State.STOP)
-                elevator.openDoor();
+        int level = currentLevel;
+
+        if (request.getTargetLevel() == currentLevel && elevator.getState() == IElevator.State.STOP) {
+            elevator.openDoor();
             return false;
         }
 
         scheduler.addRequest(request);
-        scheduler.sortRequests(currentLevel, currentMovement);
+        scheduler.sortRequests(level, currentMovement);
         return true;
     }
 
@@ -153,6 +156,9 @@ public class Supervisor implements Runnable {
         }
     }
 
+    /**
+     * Called when current request was satisfied
+     */
     private void requestSatisfied() {
         panelManager.levelSatisfied(currentRequest.getTargetLevel());
         scheduler.requestSatisfied();
@@ -173,7 +179,7 @@ public class Supervisor implements Runnable {
     }
 
     /**
-     * Ask to supervisor to disable emergency state
+     * Ask supervisor to disable emergency state
      */
     public void requestDisableEmergency() {
         if (isSystemHalted)
@@ -191,7 +197,8 @@ public class Supervisor implements Runnable {
         while (elevator.getState() == IElevator.State.RESET) {
             try {
                 Thread.sleep(Configuration.SUPERVISOR_TICK_TIME);
-            } catch (InterruptedException ignored) {}
+            } catch (InterruptedException ignored) {
+            }
         }
         panelManager.updateMessage(Movement.IDLE, 0);
         currentMovement = Movement.IDLE;
@@ -201,6 +208,7 @@ public class Supervisor implements Runnable {
 
     /**
      * Know if system is halted
+     *
      * @return boolean true if halted, false otherwise
      */
     public boolean isSystemHalted() {
@@ -213,6 +221,7 @@ public class Supervisor implements Runnable {
 
     /**
      * Get current level of the elevator
+     *
      * @return int for the current level
      */
     public int getCurrentLevel() {
@@ -229,12 +238,14 @@ public class Supervisor implements Runnable {
             tick();
             try {
                 Thread.sleep(Configuration.SUPERVISOR_TICK_TIME);
-            } catch (InterruptedException ignored) {}
+            } catch (InterruptedException ignored) {
+            }
         }
     }
 
     /**
      * Send movement to elevator's engine and update current state
+     *
      * @param movement movement to choose
      */
     public void sendMovementCommand(Movement movement) {

@@ -7,7 +7,7 @@ package fr.univ_amu.model;
  */
 public class Timestamp {
 
-    private long value;
+    private final long value;
 
     /**
      * Default constructor
@@ -18,6 +18,7 @@ public class Timestamp {
 
     /**
      * Get time in milliseconds of Timestamp
+     *
      * @return milliseconds in long
      */
     public long getMilliseconds() {

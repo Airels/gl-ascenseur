@@ -4,30 +4,26 @@ import elevator.IPanel;
 import fr.univ_amu.model.Direction;
 import fr.univ_amu.model.Movement;
 import fr.univ_amu.model.Request;
-import fr.univ_amu.model.RequestOrigin;
 import fr.univ_amu.utils.Configuration;
 import fr.univ_amu.utils.TextTransformation;
 
 /**
- * Panel manager who will listen to panel interface to catch events and transforms them into Requests independently from Supervisor
+ * Panel manager who will listen to panel gui to catch events and transforms them into Requests independently of Supervisor. <br />
+ * Supervisor will after check panel manager if an event occurred independently.
  *
  * @author VIZCAINO Yohan
  */
 public class PanelManager implements Runnable {
 
-    /**
-     *
-     */
     private IPanel panel;
-    /**
-     *
-     */
     private Supervisor supervisor;
-
     private boolean isEventByUser;
 
     /**
      * Default constructor
+     *
+     * @param iPanel     object linker to the panel
+     * @param supervisor supervisor of the elevator
      */
     public PanelManager(IPanel iPanel, Supervisor supervisor) {
         this.supervisor = supervisor;
@@ -55,7 +51,8 @@ public class PanelManager implements Runnable {
             tick();
             try {
                 Thread.sleep(Configuration.PANEL_MANAGER_TICK_TIME);
-            } catch (InterruptedException ignored) {}
+            } catch (InterruptedException ignored) {
+            }
         }
     }
 
@@ -63,53 +60,59 @@ public class PanelManager implements Runnable {
      * Infinite loop who process all user interactions
      */
     public void tick() {
-        if (panel.getAndResetStopButton()) {
-            supervisor.enableEmergenry();
-
-            for (int i = 0; i < Configuration.MAX_LEVEL; i++) {
-                panel.setFloorLight(i, false);
-                panel.setUpLight(i, false);
-                panel.setDownLight(i, false);
-            }
+        if (panel.getAndResetStopButton())
+            handleGetAndResetStopButton();
+        else {
+            if (panel.getAndResetInitButton())
+                supervisor.requestDisableEmergency();
 
             if (panel.getAndResetButtonsSensor()) {
-                for (int i = 0; i <= Configuration.MAX_LEVEL; i++) {
-                    panel.getAndResetFloorButton(i);
-                    panel.getAndResetUpButton(i);
-                    panel.getAndResetDownButton(i);
-                }
+                handleButtonsEvent();
             }
-
-            return;
         }
+    }
 
-        if (panel.getAndResetInitButton())
-            supervisor.requestDisableEmergency();
+    private void handleGetAndResetStopButton() {
+        supervisor.enableEmergenry();
+
+        for (int i = 0; i < Configuration.MAX_LEVEL; i++) {
+            panel.setFloorLight(i, false);
+            panel.setUpLight(i, false);
+            panel.setDownLight(i, false);
+        }
 
         if (panel.getAndResetButtonsSensor()) {
             for (int i = 0; i <= Configuration.MAX_LEVEL; i++) {
-                if (panel.getAndResetFloorButton(i)) {
-                    if (!supervisor.isSystemHalted()) {
-                        isEventByUser = supervisor.addRequest(new Request(supervisor.getCurrentLevel(), i));
-                        if (isEventByUser)
-                            panel.setFloorLight(i, true);
-                    }
-                }
+                panel.getAndResetFloorButton(i);
+                panel.getAndResetUpButton(i);
+                panel.getAndResetDownButton(i);
+            }
+        }
+    }
 
-                if (panel.getAndResetDownButton(i)) {
-                    if (!supervisor.isSystemHalted()) {
-                        isEventByUser = supervisor.addRequest(new Request(Direction.DOWN, i));
-                        if (isEventByUser)
-                            panel.setDownLight(i, true);
-                    }
+    private void handleButtonsEvent() {
+        for (int i = 0; i <= Configuration.MAX_LEVEL; i++) {
+            if (panel.getAndResetFloorButton(i)) {
+                if (!supervisor.isSystemHalted()) {
+                    isEventByUser = supervisor.addRequest(new Request(supervisor.getCurrentLevel(), i));
+                    if (isEventByUser)
+                        panel.setFloorLight(i, true);
                 }
+            }
 
-                if (panel.getAndResetUpButton(i)) {
-                    if (!supervisor.isSystemHalted()) {
-                        isEventByUser = supervisor.addRequest(new Request(Direction.UP, i));
-                        if (isEventByUser)
-                            panel.setUpLight(i, true);
-                    }
+            if (panel.getAndResetDownButton(i)) {
+                if (!supervisor.isSystemHalted()) {
+                    isEventByUser = supervisor.addRequest(new Request(Direction.DOWN, i));
+                    if (isEventByUser)
+                        panel.setDownLight(i, true);
+                }
+            }
+
+            if (panel.getAndResetUpButton(i)) {
+                if (!supervisor.isSystemHalted()) {
+                    isEventByUser = supervisor.addRequest(new Request(Direction.UP, i));
+                    if (isEventByUser)
+                        panel.setUpLight(i, true);
                 }
             }
         }
@@ -117,6 +120,7 @@ public class PanelManager implements Runnable {
 
     /**
      * Allows switch off buttons of a target floor
+     *
      * @param level floor to switch off
      */
     public void levelSatisfied(int level) {
