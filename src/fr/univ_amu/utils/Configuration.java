@@ -18,12 +18,12 @@ public class Configuration {
     public static final SatisfactionStrategy REQUEST_SATISFACTIONS_STRATEGY = SatisfactionStrategy.DEFAULT;
 
     /**
-     * Time between each tick of the supervisor
+     * Time in milliseconds between each tick of the supervisor
      */
     public static final int SUPERVISOR_TICK_TIME = 125;
 
     /**
-     * Time between each tick of the panel manager
+     * Time in milliseconds between each tick of the panel manager
      */
     public static final int PANEL_MANAGER_TICK_TIME = 250;
 

@@ -37,7 +37,7 @@ public class DefaultScheduler implements Scheduler {
         if (pendingRequests.size() == 1)
             return;
 
-        List<Request> requests = new ArrayList<>();
+        List<Request> firstRequests = new ArrayList<>();
         List<Request> oppositeRequests = new ArrayList<>();
         List<Request> lastRequests = new ArrayList<>();
 
@@ -45,8 +45,8 @@ public class DefaultScheduler implements Scheduler {
             if (currentMovement == Movement.DOWN) {
                 if (request.getRequestOrigin() == RequestOrigin.OUTSIDE && Direction.toMovement(request.getDirection()) != currentMovement)
                     oppositeRequests.add(request);
-                if (request.getTargetLevel() < currentLevel)
-                    requests.add(request);
+                else if (request.getTargetLevel() < currentLevel)
+                    firstRequests.add(request);
                 else if (request.getRequestOrigin() == RequestOrigin.INSIDE)
                     oppositeRequests.add(request);
                 else
@@ -55,7 +55,7 @@ public class DefaultScheduler implements Scheduler {
                 if (request.getRequestOrigin() == RequestOrigin.OUTSIDE && Direction.toMovement(request.getDirection()) != currentMovement)
                     oppositeRequests.add(request);
                 else if (request.getTargetLevel() > currentLevel)
-                    requests.add(request);
+                    firstRequests.add(request);
                 else if (request.getRequestOrigin() == RequestOrigin.INSIDE)
                     oppositeRequests.add(request);
                 else
@@ -63,9 +63,9 @@ public class DefaultScheduler implements Scheduler {
             }
         }
 
-        Collections.sort(requests);
+        Collections.sort(firstRequests);
         if (currentMovement == Movement.UP)
-            Collections.reverse(requests);
+            Collections.reverse(firstRequests);
 
         Collections.sort(oppositeRequests);
         if (currentMovement == Movement.DOWN)
@@ -76,7 +76,7 @@ public class DefaultScheduler implements Scheduler {
             Collections.reverse(lastRequests);
 
         pendingRequests.clear();
-        pendingRequests.addAll(requests);
+        pendingRequests.addAll(firstRequests);
         pendingRequests.addAll(oppositeRequests);
         pendingRequests.addAll(lastRequests);
     }

@@ -8,7 +8,7 @@ import fr.univ_amu.utils.Configuration;
 import fr.univ_amu.utils.TextTransformation;
 
 /**
- * Panel manager who will listen to panel gui to catch events and transforms them into Requests independently of Supervisor. <br />
+ * Panel manager who will listen to panel to catch events and transforms them into Requests independently of Supervisor. <br />
  * Supervisor will after check panel manager if an event occurred independently.
  *
  * @author VIZCAINO Yohan
