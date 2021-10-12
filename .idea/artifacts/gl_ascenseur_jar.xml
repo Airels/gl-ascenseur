@@ -1,0 +1,9 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="gl-ascenseur:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/gl_ascenseur_jar</output-path>
+    <root id="archive" name="gl-ascenseur.jar">
+      <element id="module-output" name="gl-ascenseur" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/ElevatorSimulator-0.8.jar" path-in-jar="/" />
+    </root>
+  </artifact>
+</component>

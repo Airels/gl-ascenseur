@@ -34,9 +34,6 @@ public class DefaultScheduler implements Scheduler {
 
     @Override
     public void sortRequests(int currentLevel, Movement currentMovement) {
-        System.out.println("----");
-        System.out.println("CURRENT(" + currentLevel + ")(" + currentMovement + ")");
-
         if (pendingRequests.size() == 1)
             return;
 
@@ -77,13 +74,6 @@ public class DefaultScheduler implements Scheduler {
         Collections.sort(lastRequests);
         if (currentMovement == Movement.UP)
             Collections.reverse(lastRequests);
-
-        for (Request r : requests)
-            System.out.println("2: " + r);
-        for (Request r : oppositeRequests)
-            System.out.println("3: " + r);
-        for (Request r : lastRequests)
-            System.out.println("4: " + r);
 
         pendingRequests.clear();
         pendingRequests.addAll(requests);

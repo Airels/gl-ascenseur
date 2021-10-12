@@ -37,5 +37,7 @@ public class Main {
         new Thread(internalPanelView).start();
         new Thread(externalPanelView).start();
         new Thread(elevatorRepresentation).start();
+
+        System.out.println("INIT COMPLETE");
     }
 }
