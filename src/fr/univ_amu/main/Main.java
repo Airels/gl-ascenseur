@@ -33,10 +33,23 @@ public class Main {
         ExternalPanelView externalPanelView = new ExternalPanelView(panelSimulator);
         ElevatorRepresentation elevatorRepresentation = new ElevatorRepresentation(elevatorSimulator);
 
-        new Thread(supervisor).start();
-        new Thread(internalPanelView).start();
-        new Thread(externalPanelView).start();
-        new Thread(elevatorRepresentation).start();
+        // Init Threads
+        Thread s = new Thread(supervisor);
+        s.setName("Supervisor");
+
+        Thread ipv = new Thread(internalPanelView);
+        ipv.setName("Internal Panel View");
+
+        Thread epv = new Thread(externalPanelView);
+        epv.setName("External Panel View");
+
+        Thread er = new Thread(elevatorRepresentation);
+        er.setName("Elevator Representation");
+
+        s.start();
+        ipv.start();
+        epv.start();
+        er.start();
 
         System.out.println("INIT COMPLETE");
     }

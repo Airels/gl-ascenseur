@@ -98,11 +98,12 @@ public class Supervisor implements Runnable {
      * Handle an event level sensor
      */
     private void handleStageSensorEvent() {
+        currentLevel += (currentMovement == Movement.UP) ? 1 : -1;
+
         if (requestedDisableEmergency) {
             requestedDisableEmergency = false;
+            return;
         }
-
-        currentLevel += (currentMovement == Movement.UP) ? 1 : -1;
 
         if (currentRequest.getTargetLevel() == currentLevel) {
             requestSatisfied();
@@ -202,7 +203,7 @@ public class Supervisor implements Runnable {
         }
         panelManager.updateMessage(Movement.IDLE, 0);
         currentMovement = Movement.IDLE;
-        currentLevel = 0;
+        currentLevel = 1;
         isSystemHalted = false;
     }
 

@@ -76,12 +76,12 @@ public class InternalPanelView implements Runnable {
         }
 
         JButton emergency = new JButton(ButtonType.BREAK.toString());
-        emergency.addActionListener(new InternalPanelController(panelSimulator, ButtonType.BREAK));
+        emergency.addActionListener(new InternalPanelController(this, panelSimulator, ButtonType.BREAK));
         buttonsGrid.add(emergency);
         buttons[MAX_LEVEL+1] = emergency;
 
         JButton reset = new JButton(ButtonType.RESET.toString());
-        reset.addActionListener(new InternalPanelController(panelSimulator, ButtonType.RESET));
+        reset.addActionListener(new InternalPanelController(this, panelSimulator, ButtonType.RESET));
         buttonsGrid.add(reset);
         buttons[MAX_LEVEL+2] = reset;
 
@@ -137,9 +137,5 @@ public class InternalPanelView implements Runnable {
                 Thread.sleep(Configuration.FRAME_RATE_GUI);
             } catch (InterruptedException ignored) {}
         }
-    }
-
-    public static InternalPanelView getInstance() {
-        return internalPanelView;
     }
 }

@@ -19,6 +19,7 @@ public class InternalPanelController implements ActionListener {
     private int level;
     private ButtonType buttonType;
     private IPanelSimulator panelSimulator;
+    private InternalPanelView view;
 
     /**
      * Default constructor, for classical call buttons
@@ -34,14 +35,16 @@ public class InternalPanelController implements ActionListener {
     /**
      * Second constructor, for special buttons
      *
+     * @param view associated
      * @param panelSimulator inside and outside panel simulation
      * @param buttonType     button type to handle
      * @see ButtonType to see all special buttons
      */
-    public InternalPanelController(IPanelSimulator panelSimulator, ButtonType buttonType) {
+    public InternalPanelController(InternalPanelView view, IPanelSimulator panelSimulator, ButtonType buttonType) {
         this.panelSimulator = panelSimulator;
         level = -1;
         this.buttonType = buttonType;
+        this.view = view;
     }
 
     @Override
@@ -52,11 +55,11 @@ public class InternalPanelController implements ActionListener {
             switch (buttonType) {
                 case BREAK -> {
                     panelSimulator.pressStopButton();
-                    InternalPanelView.getInstance().illuminateButton(Configuration.MAX_LEVEL + 1);
+                    view.illuminateButton(Configuration.MAX_LEVEL + 1);
                 }
                 case RESET -> {
                     panelSimulator.pressInitButton();
-                    InternalPanelView.getInstance().switchOffButton(Configuration.MAX_LEVEL + 1);
+                    view.switchOffButton(Configuration.MAX_LEVEL + 1);
                 }
             }
         }

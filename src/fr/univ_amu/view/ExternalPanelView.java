@@ -101,8 +101,4 @@ public class ExternalPanelView implements Runnable {
             } catch (InterruptedException ignored) {}
         }
     }
-
-    public static ExternalPanelView getInstance() {
-        return externalPanelView;
-    }
 }
