@@ -27,6 +27,8 @@ public class ExternalPanelView implements Runnable {
 
     /**
      * Default constructor
+     *
+     * @param panelSimulator panel simulator
      */
     public ExternalPanelView(IPanelSimulator panelSimulator) {
         externalPanelView = this;

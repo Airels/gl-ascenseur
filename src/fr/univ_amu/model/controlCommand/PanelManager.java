@@ -94,7 +94,7 @@ public class PanelManager implements Runnable {
         for (int i = 0; i <= Configuration.MAX_LEVEL; i++) {
             if (panel.getAndResetFloorButton(i)) {
                 if (!supervisor.isSystemHalted()) {
-                    isEventByUser = supervisor.addRequest(new Request(supervisor.getCurrentLevel(), i));
+                    isEventByUser = supervisor.addRequest(new Request(i));
                     if (isEventByUser)
                         panel.setFloorLight(i, true);
                 }
@@ -131,6 +131,9 @@ public class PanelManager implements Runnable {
 
     /**
      * Allows to update the internal view elevator to informs user about elevator's state
+     *
+     * @param currentMovement of the elevator
+     * @param currentLevel of the elevator
      */
     public void updateMessage(Movement currentMovement, int currentLevel) {
         StringBuilder stringBuilder = new StringBuilder();

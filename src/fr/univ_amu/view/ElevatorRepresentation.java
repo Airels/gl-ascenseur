@@ -18,6 +18,10 @@ public class ElevatorRepresentation implements Runnable {
     private final IElevatorSimulator elevatorSimulator;
     private final Rectangle elevator;
 
+    /**
+     * Default constructor
+     * @param elevatorSimulator simulator of the elevator
+     */
     public ElevatorRepresentation(IElevatorSimulator elevatorSimulator) {
         this.elevatorSimulator = elevatorSimulator;
 

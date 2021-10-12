@@ -24,6 +24,7 @@ public final class SchedulerBuilder {
      *
      * @param strategy strategy to build
      * @return built Scheduler
+     * @throws UnhandledStrategyException if given strategy isn't handled
      */
     public static Scheduler build(SatisfactionStrategy strategy) throws UnhandledStrategyException {
         System.out.println("Selected strategy: " + strategy.name());

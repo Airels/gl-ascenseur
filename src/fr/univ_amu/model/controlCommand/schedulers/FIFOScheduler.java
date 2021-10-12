@@ -16,6 +16,9 @@ public class FIFOScheduler implements Scheduler {
     private ArrayDeque<Request> pendingRequests;
     private Request currentRequest;
 
+    /**
+     * Default construtor of FIFO scheduler
+     */
     public FIFOScheduler() {
         pendingRequests = new ArrayDeque<>();
     }

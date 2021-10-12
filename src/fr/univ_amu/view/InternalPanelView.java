@@ -19,6 +19,9 @@ import static fr.univ_amu.utils.Configuration.MAX_LEVEL;
  */
 public class InternalPanelView implements Runnable {
 
+    /**
+     * Default color of a button
+     */
     public static final Color defaultButtonColor = new JButton().getBackground();
 
     private JFrame window;
@@ -33,6 +36,8 @@ public class InternalPanelView implements Runnable {
 
     /**
      * Default constructor
+     *
+     * @param panelSimulator panel simulator
      */
     public InternalPanelView(IPanelSimulator panelSimulator) {
         internalPanelView = this;

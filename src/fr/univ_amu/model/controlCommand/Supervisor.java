@@ -49,6 +49,9 @@ public class Supervisor implements Runnable {
 
     /**
      * Default constructor
+     *
+     * @param panel of elevator
+     * @param elevator simulator
      */
     public Supervisor(IPanel panel, IElevator elevator) {
         try {

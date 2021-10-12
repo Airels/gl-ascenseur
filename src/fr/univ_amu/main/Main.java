@@ -19,6 +19,9 @@ import fr.univ_amu.view.InternalPanelView;
  */
 public class Main {
 
+    /**
+     * Main entry of program
+     */
     public static void main(String[] args) {
         System.out.println("INIT");
 

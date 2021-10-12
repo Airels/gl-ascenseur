@@ -36,13 +36,18 @@ public class Request implements Comparable<Request> {
 
     /**
      * Constructor for inside the elevator's requests
+     *
+     * @param targetLevel wanted level
      */
-    public Request(int sourceLevel, int targetLevel) {
+    public Request(int targetLevel) {
         this(RequestOrigin.INSIDE, null, targetLevel);
     }
 
     /**
      * Constructor for outside the elevator's requests
+     *
+     * @param direction wanted direction
+     * @param targetLevel wanted level
      */
     public Request(Direction direction, int targetLevel) {
         this(RequestOrigin.OUTSIDE, direction, targetLevel);
