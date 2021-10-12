@@ -127,9 +127,11 @@ public class Supervisor implements Runnable {
     public boolean addRequest(Request request) {
         int level = currentLevel;
 
-        if (request.getTargetLevel() == currentLevel && elevator.getState() == IElevator.State.STOP) {
-            elevator.openDoor();
-            return false;
+        if (request.getTargetLevel() == currentLevel) {
+            if (elevator.getState() == IElevator.State.STOP)
+                elevator.openDoor();
+            else if (elevator.getState() == IElevator.State.DOOR)
+                return false;
         }
 
         scheduler.addRequest(request);
